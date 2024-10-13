@@ -7,9 +7,8 @@ from util.functions import sha
 
 
 class Credential(ChangeLog):
-
     class Meta:
-        abstract = False
+        verbose_name_plural = "Credentials"
 
     user_name = models.CharField(
         max_length=127,

@@ -7,6 +7,8 @@ from util._models.district import District
 
 
 class Address(ChangeLog):
+    class Meta:
+        verbose_name_plural = "Addresses"
 
     district = models.ForeignKey(
         District,
