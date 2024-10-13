@@ -11,6 +11,7 @@ class ChangeLog(models.Model):
 
     createdOn = models.DateTimeField(
         blank=True,
+        default=timezone.now,
     )
     createdBy = models.CharField(
         blank=True,
@@ -18,11 +19,15 @@ class ChangeLog(models.Model):
     )
     changedOn = models.DateTimeField(
         blank=True,
-        default=timezone.now,
+        auto_now=True,
     )
     changedBy = models.CharField(
         blank=True,
         max_length=127,
+    )
+
+    is_active = models.BooleanField(
+        default=True,
     )
 
     def save(self, *args, **kwargs):
@@ -34,11 +39,9 @@ class ChangeLog(models.Model):
         finally:
             user_id = user_id.upper()
 
-        if self.createdOn == "":
-            self.createdOn = self.changedOn
+        if self.pk is None:
             self.createdBy = user_id
-            del self.changedOn
         else:
-            self.changedByBy = user_id
+            self.changedBy = user_id
 
         return super(ChangeLog, self).save(*args, **kwargs)

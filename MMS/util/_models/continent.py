@@ -1,15 +1,17 @@
 # =====================================================================
 from django.db import models
-from util.models.change_log import ChangeLog
+from util._models.change_log import ChangeLog
 
 # =====================================================================
 
 
 class Continent(ChangeLog):
-    class Meta:
-        abstract = False
 
-    name = models.DateTimeField(
+    class Meta:
+        verbose_name_plural = "Continents"
+
+    name = models.CharField(
+        max_length=127,
         blank=False,
         unique=True,
     )

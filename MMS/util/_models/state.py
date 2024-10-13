@@ -1,25 +1,29 @@
 # =====================================================================
 from django.db import models
-from util.models.country import Country
-from util.models.change_log import ChangeLog
+from util._models.country import Country
+from util._models.change_log import ChangeLog
 
 # =====================================================================
 
 
 class State(ChangeLog):
     class Meta:
-        abstract = False
         unique_together = (
             "country",
             "name",
         )
+        verbose_name_plural = "States"
 
     country = models.ForeignKey(
         Country,
         on_delete=models.SET_NULL,
         null=True,
     )
-    name = models.DateTimeField(blank=False)
+    name = models.CharField(
+        max_length=127,
+        blank=False,
+        unique=True,
+    )
 
     def save(self, *args, **kwargs):
         self.name = self.name.upper()

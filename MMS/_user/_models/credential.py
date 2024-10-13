@@ -1,6 +1,6 @@
 # =====================================================================
 from django.db import models
-from util.models.change_log import ChangeLog
+from util._models.change_log import ChangeLog
 from util.functions import sha
 
 # =====================================================================

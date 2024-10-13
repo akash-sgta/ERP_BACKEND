@@ -1,14 +1,12 @@
 # =====================================================================
 from django.db import models
-from util.models.change_log import ChangeLog
-from util.models.district import District
+from util._models.change_log import ChangeLog
+from util._models.district import District
 
 # =====================================================================
 
 
 class Address(ChangeLog):
-    class Meta:
-        abstract = False
 
     district = models.ForeignKey(
         District,
