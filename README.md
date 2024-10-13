@@ -1,13 +1,7 @@
 # ERP_BACKEND
 ERP system backend on Django
 ___
-## Projects
-    1.  Medical Management System
-
-___
-### <u>M</u>edical <u>M</u>anagement <u>S</u>ystem
-    Steps to configure:
-
+### Steps to configure:
     1.  Create virtual environment
 ```commandline
 python -m venv venv
@@ -24,3 +18,8 @@ source venv/bin/activate
 ```commandline
 pip install -f requirement.txt
 ```
+## Projects
+    1.  Medical Management System
+
+___
+### <u>M</u>edical <u>M</u>anagement <u>S</u>ystem
