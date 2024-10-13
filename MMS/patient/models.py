@@ -1,4 +1,4 @@
 # =====================================================================
-from patient._models.patient import Patient as Patient_Patient
+from patient._models.patient import Patient
 
 # =====================================================================
