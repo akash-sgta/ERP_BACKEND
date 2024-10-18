@@ -4,8 +4,8 @@ from util._models.change_log import ChangeLog
 from util._models.government_id_type import GovernmentIdType
 from util._models.file import File
 from util.functions import validate_phone_number
-from _user._models.credential import Credential
-from _user._models.address import Address
+from profile._models.address import Address
+from django.contrib.auth.models import User
 
 # =====================================================================
 
@@ -14,12 +14,12 @@ class Profile(ChangeLog):
     class Meta:
         verbose_name_plural = "Profiles"
         unique_together = (
-            "credential",
+            "user",
             "address",
         )
 
-    credential = models.ForeignKey(
-        Credential,
+    user = models.ForeignKey(
+        User,
         on_delete=models.SET_NULL,
         null=True,
     )
@@ -82,4 +82,4 @@ class Profile(ChangeLog):
         return super(Profile, self).save(*args, **kwargs)
 
     def __str__(self):
-        return "{}->{} {}".format(self.credential, self.first_name, self.last_name)
+        return "{}->{} {}".format(self.user, self.first_name, self.last_name)

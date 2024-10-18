@@ -1,4 +1,21 @@
-from pickle import FALSE
+from django.db import models
+
+
+def create_new_key(_model: models.Model, field_name: str):
+    key = None
+    try:
+        while True:
+            try:
+                key = create_random(
+                    symbols=False,
+                    lower_case=False,
+                )
+                exec("_model.objects.get({}=key)".format(field_name))
+            except _model.DoesNotExist:
+                break
+    except Exception:
+        key = None
+    return key
 
 
 def sha(input_string, bits=256):

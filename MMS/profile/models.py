@@ -1,6 +1,5 @@
 # =====================================================================
-from _user._models.credential import Credential
-from _user._models.profile import Profile
-from _user._models.address import Address
+from profile._models.profile import Profile
+from profile._models.address import Address
 
 # =====================================================================

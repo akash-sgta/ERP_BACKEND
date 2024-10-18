@@ -2,7 +2,7 @@
 from django.db import models
 from util._models.change_log import ChangeLog
 from util.functions import create_random, validate_string_len
-from _user._models.profile import Profile
+from profile._models.profile import Profile
 
 # =====================================================================
 
