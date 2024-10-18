@@ -8,26 +8,20 @@ from django.db.models import Manager
 
 class ChangeLogQuerySet(models.QuerySet):
 
-    def _filter(self, *args, **kwargs):
-        try:
-            is_active = not kwargs["is_deleted"]
-        except KeyError:
-            is_active = True
-        return self.filter(is_active=is_active, *args, **kwargs)
+    def _filter(self, include_deleted=False, *args, **kwargs):
+        if include_deleted:
+            return self.filter(*args, **kwargs)
+        else:
+            return self.filter(is_active=True, *args, **kwargs)
 
-    def _all(self, *args, **kwargs):
-        try:
-            is_active = not kwargs["is_deleted"]
-        except KeyError:
-            is_active = True
-        return self.filter(is_active=is_active)
+    def _all(self, include_deleted=False, *args, **kwargs):
+        return self._filter(include_deleted=include_deleted)
 
-    def _get(self, *args, **kwargs):
-        try:
-            is_active = not kwargs["is_deleted"]
-        except KeyError:
-            is_active = True
-        return self.get(is_active=is_active, *args, **kwargs)
+    def _get(self, include_deleted=False, *args, **kwargs):
+        if include_deleted:
+            return self.get(is_active=True, *args, **kwargs)
+        else:
+            return self.get(*args, **kwargs)
 
 
 class ChangeLogModelManager(Manager):
@@ -36,6 +30,10 @@ class ChangeLogModelManager(Manager):
 
 
 class ChangeLog(models.Model):
+    C_USER_ID = "USER_ID"
+    C_DEFAULT = "DEFAULT"
+    C_FORCED = "FORCED"
+
     class Meta:
         abstract = True
 
@@ -65,9 +63,9 @@ class ChangeLog(models.Model):
     def save(self, *args, **kwargs):
 
         try:
-            user_id = kwargs["user_id"]
+            user_id = kwargs[self.C_USER_ID]
         except KeyError:
-            user_id = "DEFAULT"
+            user_id = self.C_DEFAULT
         finally:
             user_id = user_id.upper()
 
@@ -80,7 +78,7 @@ class ChangeLog(models.Model):
 
     def delete(self, *args, **kwargs):
         try:
-            if kwargs["forced"] is True:
+            if kwargs[self.C_FORCED] is True:
                 return super(ChangeLog, self).delete(*args, **kwargs)
         except KeyError:
             self.is_active = False
