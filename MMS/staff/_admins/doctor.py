@@ -4,7 +4,7 @@ from util._admins.change_log import ChangeLog
 # =====================================================================
 
 
-class Patient(ChangeLog):
+class Doctor(ChangeLog):
     list_display = (
         "pid",
         "profile__first_name",

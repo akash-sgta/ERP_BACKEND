@@ -7,9 +7,9 @@ from _user._models.profile import Profile
 # =====================================================================
 
 
-class Patient(ChangeLog):
+class Doctor(ChangeLog):
     class Meta:
-        verbose_name_plural = "Patients"
+        verbose_name_plural = "Doctors"
 
     profile = models.OneToOneField(
         Profile,
@@ -36,11 +36,11 @@ class Patient(ChangeLog):
                         numbers=True,
                         randomize=True,
                     )
-                    Patient.objects.get(pid=_pid)
-                except Patient.DoesNotExist:
+                    Doctor.objects.get(pid=_pid)
+                except Doctor.DoesNotExist:
                     break
             self.pid = _pid
-        return super(Patient, self).save(*args, **kwargs)
+        return super(Doctor, self).save(*args, **kwargs)
 
     def __str__(self):
         return "{}->{}".format(self.profile, self.pid)
