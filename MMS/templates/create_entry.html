@@ -1,0 +1,18 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Create YourModel</title>
+</head>
+<body>
+    <h1>Create YourModel</h1>
+    <form method="post">
+        {% csrf_token %}
+        {{ form.as_p }}
+        <button type="submit">Submit</button>
+    </form>
+    {% if form.errors %}
+        <p>Errors: {{ form.errors }}</p>
+    {% endif %}
+
+</body>
+</html>

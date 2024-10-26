@@ -1,32 +1,31 @@
 # =====================================================================
+from django.core.exceptions import ObjectDoesNotExist
 from django.db import models
 from django.utils import timezone
 from django.db.models import Manager
+from django.db.utils import IntegrityError
 
 # =====================================================================
 
 
-class ChangeLogQuerySet(models.QuerySet):
+class ChangeLogModelManager(Manager):
 
     def _filter(self, include_deleted=False, *args, **kwargs):
         if include_deleted:
-            return self.filter(*args, **kwargs)
+            ref = self.filter(*args, **kwargs)
         else:
-            return self.filter(is_active=True, *args, **kwargs)
+            ref = self.filter(is_active=True, *args, **kwargs)
+        return ref
 
     def _all(self, include_deleted=False, *args, **kwargs):
         return self._filter(include_deleted=include_deleted)
 
     def _get(self, include_deleted=False, *args, **kwargs):
         if include_deleted:
-            return self.get(is_active=True, *args, **kwargs)
+            ref = self.get(is_active=True, *args, **kwargs)
         else:
-            return self.get(*args, **kwargs)
-
-
-class ChangeLogModelManager(Manager):
-    def get_queryset(self):
-        return ChangeLogQuerySet(self.model, using=self._db)
+            ref = self.get(*args, **kwargs)
+        return ref
 
 
 class ChangeLog(models.Model):
@@ -60,7 +59,11 @@ class ChangeLog(models.Model):
 
     objects = ChangeLogModelManager()
 
-    def save(self, *args, **kwargs):
+    def save(self, del_flag=False, *args, **kwargs):
+        if del_flag:
+            self.is_active = False
+        else:
+            self.is_active = True
 
         try:
             user_id = kwargs[self.C_USER_ID]
@@ -74,13 +77,39 @@ class ChangeLog(models.Model):
         else:
             self.changedBy = user_id
 
-        return super(ChangeLog, self).save(*args, **kwargs)
+        try:
+            ref = super(ChangeLog, self).save(*args, **kwargs)
+        except IntegrityError as e:
+            ref = None
+            if self.pk is not None:
+                raise e
+            else:
+                unique_together = self._meta.unique_together
+                if len(unique_together) > 0:
+                    expression = "self.__class__.objects.get("
+                    for unique_stack in unique_together:
+                        for unique in unique_stack:
+                            expression = "{}{}=self.{},".format(expression, unique, unique)
+                    expression = "{})".format(expression[:-1])
+                    try:
+                        ref = eval(expression)
+                    except ObjectDoesNotExist:
+                        raise Exception("Foreign Key")
+                    else:
+                        if ref.is_active:
+                            raise e
+                        else:
+                            ref.is_active = True
+                            try:
+                                ref = ref.save()
+                            except Exception:
+                                raise e
+        return ref
 
     def delete(self, *args, **kwargs):
         try:
             if kwargs[self.C_FORCED] is True:
                 return super(ChangeLog, self).delete(*args, **kwargs)
         except KeyError:
-            self.is_active = False
-            self.save()
+            self.save(del_flag=True)
             return

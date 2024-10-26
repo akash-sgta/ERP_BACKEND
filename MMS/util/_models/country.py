@@ -16,13 +16,11 @@ class Country(ChangeLog):
 
     continent = models.ForeignKey(
         Continent,
-        on_delete=models.SET_NULL,
-        null=True,
+        on_delete=models.CASCADE,
     )
     name = models.CharField(
         max_length=127,
         blank=False,
-        unique=True,
     )
 
     def save(self, *args, **kwargs):

@@ -9,6 +9,7 @@ class FileType(ChangeLog):
 
     class Meta:
         verbose_name_plural = "File Types"
+        unique_together = ("code",)
 
     code = models.CharField(
         max_length=7,

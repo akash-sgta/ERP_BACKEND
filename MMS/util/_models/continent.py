@@ -9,11 +9,11 @@ class Continent(ChangeLog):
 
     class Meta:
         verbose_name_plural = "Continents"
+        unique_together = ("name",)
 
     name = models.CharField(
         max_length=127,
         blank=False,
-        unique=True,
     )
 
     def save(self, *args, **kwargs):

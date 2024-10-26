@@ -16,8 +16,7 @@ class District(ChangeLog):
 
     state = models.ForeignKey(
         State,
-        on_delete=models.SET_NULL,
-        null=True,
+        on_delete=models.CASCADE,
     )
     name = models.CharField(
         max_length=127,

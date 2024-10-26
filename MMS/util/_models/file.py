@@ -14,8 +14,7 @@ class File(ChangeLog):
 
     type = models.ForeignKey(
         FileType,
-        on_delete=models.SET_NULL,
-        null=True,
+        on_delete=models.CASCADE,
         blank=True,
     )
 
