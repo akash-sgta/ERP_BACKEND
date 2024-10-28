@@ -28,4 +28,6 @@ class Country(ChangeLog):
         return super(Country, self).save(*args, **kwargs)
 
     def __str__(self):
-        return "{}->{}".format(self.continent, self.name)
+        return "{}->{}{}".format(
+            self.continent, super(Country, self).__str__(), self.name
+        )

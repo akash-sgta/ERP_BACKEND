@@ -21,4 +21,4 @@ class Continent(ChangeLog):
         return super(Continent, self).save(*args, **kwargs)
 
     def __str__(self):
-        return "{}".format(self.name)
+        return "{}{}".format(super(Continent, self).__str__(), self.name)

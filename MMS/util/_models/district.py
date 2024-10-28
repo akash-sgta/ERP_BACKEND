@@ -29,4 +29,6 @@ class District(ChangeLog):
         return super(District, self).save(*args, **kwargs)
 
     def __str__(self):
-        return "{}->{}".format(self.state, self.name)
+        return "{}->{}{}".format(
+            self.state, super(District, self).__str__(), self.name
+        )

@@ -89,7 +89,9 @@ class ChangeLog(models.Model):
                     expression = "self.__class__.objects.get("
                     for unique_stack in unique_together:
                         for unique in unique_stack:
-                            expression = "{}{}=self.{},".format(expression, unique, unique)
+                            expression = "{}{}=self.{},".format(
+                                expression, unique, unique
+                            )
                     expression = "{})".format(expression[:-1])
                     try:
                         ref = eval(expression)
@@ -113,3 +115,6 @@ class ChangeLog(models.Model):
         except KeyError:
             self.save(del_flag=True)
             return
+
+    def __str__(self):
+        return "[{}] ".format("X" if self.is_active else "-")

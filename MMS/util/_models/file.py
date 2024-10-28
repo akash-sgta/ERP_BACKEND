@@ -31,4 +31,4 @@ class File(ChangeLog):
         return super(File, self).save(*args, **kwargs)
 
     def __str__(self):
-        return "{}".format(self.name)
+        return "{}{}".format(super(File, self).__str__(), self.name)

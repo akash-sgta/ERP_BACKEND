@@ -26,21 +26,32 @@ class ChangeLog(ModelSerializer):
         return super(ChangeLog, self).to_internal_value(data, *args, **kwargs)
 
     def is_valid(self, *args, **kwargs):
+        try:
+            obj_ref = self.Meta.model.objects.get(**self.initial_data)
+        except self.Meta.model.DoesNotExist:
+            obj_ref = None
+
         is_valid = super(ChangeLog, self).is_valid(*args, **kwargs)
         if not is_valid:
-            if not settings.DEBUG:
+            if obj_ref is None:
                 _message_01 = "Contact Administrator : email@gmail.com"
             else:
-                _message_01 = "Contact Administrator : Entry Exists"
+                if obj_ref.is_active:
+                    _message_01 = "Entry Exists"
+                else:
+                    if not settings.DEBUG:
+                        _message_01 = (
+                            "Contact Administrator : email@gmail.com"
+                        )
+                    else:
+                        _message_01 = "Deleted Entry Exists"
             try:
                 if (
                     type(self.errors["non_field_errors"]) != str
-                    and self._errors["non_field_errors"][0].code == "unique"
+                    and self.errors["non_field_errors"][0].code == "unique"
                 ):
-                    self._errors["non_field_errors"] = _message_01
+                    self._errors["non_field_errors"].append(_message_01)
             except KeyError:
                 pass
+            print(">>", self.errors)
         return is_valid
-
-    def to_representation(self, instance):
-        return super(ChangeLog, self).to_representation(instance)

@@ -26,4 +26,4 @@ class FileType(ChangeLog):
         return super(FileType, self).save(*args, **kwargs)
 
     def __str__(self):
-        return "{}".format(self.code)
+        return "{}{}".format(super(FileType, self).__str__(), self.code)

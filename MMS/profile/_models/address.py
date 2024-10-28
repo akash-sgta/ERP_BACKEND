@@ -47,4 +47,4 @@ class Address(ChangeLog):
         return super(Address, self).save(*args, **kwargs)
 
     def __str__(self):
-        return "{}".format(self.pk)
+        return "{}{}".format(super(Address, self).__str__(), self.pk)

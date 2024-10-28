@@ -40,10 +40,12 @@ schema_view = get_schema_view(
 )
 
 urlpatterns = [
+    # =========================================================
     re_path(
         r"^admin/",
         admin.site.urls,
     ),
+    # =========================================================
     re_path(
         r"^doc/swagger/",
         schema_view.with_ui(SWAGGER, cache_timeout=0),
@@ -54,9 +56,19 @@ urlpatterns = [
         schema_view.with_ui(REDOC, cache_timeout=0),
         name="doc_redoc",
     ),
+    # =========================================================
     re_path(
         r"^util/",
         include("util.urls"),
     ),
+    re_path(
+        r"^profile/",
+        include("profile.urls"),
+    ),
+    re_path(
+        r"^patient/",
+        include("patient.urls"),
+    ),
+    # =========================================================
     # re_path(r"^action/", include("util.urls"),),
 ]

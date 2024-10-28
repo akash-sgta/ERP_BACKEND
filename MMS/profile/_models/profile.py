@@ -20,8 +20,7 @@ class Profile(ChangeLog):
 
     user = models.ForeignKey(
         User,
-        on_delete=models.SET_NULL,
-        null=True,
+        on_delete=models.CASCADE,
     )
     address = models.ForeignKey(
         Address,
@@ -82,4 +81,9 @@ class Profile(ChangeLog):
         return super(Profile, self).save(*args, **kwargs)
 
     def __str__(self):
-        return "{}->{} {}".format(self.user, self.first_name, self.last_name)
+        return "{}->{}{} {}".format(
+            self.user,
+            super(Profile, self).__str__(),
+            self.first_name,
+            self.last_name,
+        )

@@ -28,4 +28,6 @@ class State(ChangeLog):
         return super(State, self).save(*args, **kwargs)
 
     def __str__(self):
-        return "{}->{}".format(self.country, self.name)
+        return "{}->{}{}".format(
+            self.country, super(State, self).__str__(), self.name
+        )

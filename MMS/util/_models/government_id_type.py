@@ -21,4 +21,6 @@ class GovernmentIdType(ChangeLog):
         return super(GovernmentIdType, self).save(*args, **kwargs)
 
     def __str__(self):
-        return "{}".format(self.name)
+        return "{}{}".format(
+            super(GovernmentIdType, self).__str__(), self.name
+        )
