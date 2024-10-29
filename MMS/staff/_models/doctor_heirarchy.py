@@ -18,14 +18,12 @@ class DoctorHierarchy(ChangeLog):
     supervisor = models.ForeignKey(
         Doctor,
         on_delete=models.CASCADE,
-        null=True,
         related_name="supervisor",
     )
 
     subordinate = models.ForeignKey(
         Doctor,
         on_delete=models.CASCADE,
-        null=True,
         related_name="subordinate",
     )
 
@@ -33,4 +31,8 @@ class DoctorHierarchy(ChangeLog):
         return super(DoctorHierarchy, self).save(*args, **kwargs)
 
     def __str__(self):
-        return "{}=>{}".format(self.superviser, self.subordinate)
+        return "{}{}=>{}".format(
+            super(DoctorHierarchy, self).__str__(),
+            self.superviser,
+            self.subordinate,
+        )

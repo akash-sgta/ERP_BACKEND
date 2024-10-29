@@ -13,9 +13,9 @@ urlpatterns = [
         name="profile__address",
     ),
     re_path(
-        rf"country/{PATTERN_ID}",
+        rf"profile/{PATTERN_ID}",
         Profile.as_view(),
-        name="profile__country",
+        name="profile__profile",
     ),
     # re_path(r"signup/$", ff, name="signup"),
 ]

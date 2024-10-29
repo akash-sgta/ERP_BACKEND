@@ -13,8 +13,7 @@ class Nurse(ChangeLog):
 
     profile = models.OneToOneField(
         Profile,
-        on_delete=models.SET_NULL,
-        null=True,
+        on_delete=models.CASCADE,
     )
 
     pid = models.CharField(
@@ -43,4 +42,6 @@ class Nurse(ChangeLog):
         return super(Nurse, self).save(*args, **kwargs)
 
     def __str__(self):
-        return "{}->{}".format(self.profile, self.pid)
+        return "{}->{}{}".format(
+            self.profile, super(Nurse, self).__str__(), self.pid
+        )

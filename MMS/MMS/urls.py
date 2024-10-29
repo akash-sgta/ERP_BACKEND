@@ -69,6 +69,10 @@ urlpatterns = [
         r"^patient/",
         include("patient.urls"),
     ),
+    re_path(
+        r"^staff/",
+        include("staff.urls"),
+    ),
     # =========================================================
     # re_path(r"^action/", include("util.urls"),),
 ]

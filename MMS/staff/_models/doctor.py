@@ -13,12 +13,13 @@ class Doctor(ChangeLog):
 
     profile = models.OneToOneField(
         Profile,
-        on_delete=models.SET_NULL,
-        null=True,
+        on_delete=models.CASCADE,
     )
 
     def save(self, *args, **kwargs):
         return super(Doctor, self).save(*args, **kwargs)
 
     def __str__(self):
-        return "{}->{}".format(self.profile, self.pid)
+        return "{}->{}{}".format(
+            self.profile, super(Doctor, self).__str__(), self.pid
+        )

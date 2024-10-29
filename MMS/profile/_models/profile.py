@@ -81,7 +81,7 @@ class Profile(ChangeLog):
         return super(Profile, self).save(*args, **kwargs)
 
     def __str__(self):
-        return "{}->{}{} {}".format(
+        return "{}->{}{}_{}".format(
             self.user,
             super(Profile, self).__str__(),
             self.first_name,
