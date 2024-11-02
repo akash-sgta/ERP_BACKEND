@@ -3,6 +3,7 @@ from django.db import models
 from util._models.change_log import ChangeLog
 from util._models.government_id_type import GovernmentIdType
 from util._models.file import File
+from util._models.iso import Iso
 from util.functions import validate_phone_number
 from profile._models.address import Address
 from django.contrib.auth.models import User
@@ -29,18 +30,34 @@ class Profile(ChangeLog):
         GovernmentIdType,
         on_delete=models.SET_NULL,
         null=True,
+        blank=True,
     )
     government_id_file = models.OneToOneField(
         File,
         on_delete=models.SET_NULL,
         null=True,
+        blank=True,
         related_name="government_id_file",
     )
     image_file = models.OneToOneField(
         File,
         on_delete=models.SET_NULL,
         null=True,
+        blank=True,
         related_name="image_file",
+    )
+    phone_office_iso=models.ForeignKey(
+        Iso,
+        on_delete=models.SET_NULL,
+        null=True,
+        blank=True,
+        related_name="phone_office_iso",
+    )
+    phone_home_iso=models.ForeignKey(
+        Iso,
+        on_delete=models.SET_NULL,
+        null=True,
+        related_name="phone_home_iso",
     )
 
     first_name = models.CharField(
@@ -61,12 +78,13 @@ class Profile(ChangeLog):
     email = models.EmailField(
         blank=True,
     )
-    phone_office = models.CharField(
+    
+    phone_office_no = models.CharField(
         max_length=15,
         blank=True,
         validators=[validate_phone_number],
     )
-    phone_home = models.CharField(
+    phone_home_no = models.CharField(
         max_length=15,
         blank=True,
         validators=[validate_phone_number],

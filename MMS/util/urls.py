@@ -7,7 +7,7 @@ from util._views.district import District
 from util._views.file_type import FileType
 from util._views.file import File
 from util._views.government_id_type import GovernmentIdType
-
+from util._views.iso import Iso
 # =====================================================================
 PATTERN_ID = "(?P<id>\d*)"
 
@@ -46,6 +46,11 @@ urlpatterns = [
         rf"government_id_type/{PATTERN_ID}",
         GovernmentIdType.as_view(),
         name="util__government_id_type",
+    ),
+    re_path(
+        rf"iso/{PATTERN_ID}",
+        Iso.as_view(),
+        name="util__iso",
     ),
     # re_path(r"signup/$", ff, name="signup"),
 ]

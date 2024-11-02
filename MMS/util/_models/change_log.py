@@ -61,11 +61,6 @@ class ChangeLog(models.Model):
     objects = ChangeLogModelManager()
 
     def save(self, del_flag=False, *args, **kwargs):
-        if del_flag:
-            self.is_active = False
-        else:
-            self.is_active = True
-
         try:
             user_id = kwargs[self.C_USER_ID]
         except KeyError:
@@ -78,36 +73,40 @@ class ChangeLog(models.Model):
         else:
             self.changedBy = user_id
 
+        is_active_old = self.is_active
+        is_active_new = self.is_active
+
+        if del_flag:
+            is_active_new = False
+        else:
+            is_active_new = True
+
         try:
-            ref = super(ChangeLog, self).save(*args, **kwargs)
+            self.is_active = is_active_new
+            obj_ref = super(ChangeLog, self).save(*args, **kwargs)
         except IntegrityError as e:
-            ref = None
-            if self.pk is not None:
-                raise e
-            else:
-                unique_together = self._meta.unique_together
-                if len(unique_together) > 0:
-                    expression = "self.__class__.objects.get("
-                    for unique_stack in unique_together:
-                        for unique in unique_stack:
-                            expression = "{}{}=self.{},".format(
-                                expression, unique, unique
-                            )
-                    expression = "{})".format(expression[:-1])
-                    try:
-                        ref = eval(expression)
-                    except ObjectDoesNotExist:
-                        raise Exception("Foreign Key")
-                    else:
-                        if ref.is_active:
-                            raise e
+            pass
+        else:
+            # Change related objects status
+            for related_model in self.get_related_models().items():
+                try:
+                    related_refs = eval(
+                        "related_model[0].objects.filter({}=self.pk)".format(
+                            related_model[1][0]
+                        )
+                    )
+                    if len(related_refs) == 0:
+                        raise related_model[0].DoesNotExist
+                except related_model[0].DoesNotExist:
+                    pass
+                else:
+                    for related_ref in related_refs:
+                        print(related_ref)
+                        if is_active_new:
+                            related_ref.save()
                         else:
-                            ref.is_active = True
-                            try:
-                                ref = ref.save()
-                            except Exception:
-                                raise e
-        return ref
+                            related_ref.delete()
+        return obj_ref
 
     def delete(self, *args, **kwargs):
         try:
@@ -115,6 +114,7 @@ class ChangeLog(models.Model):
                 return super(ChangeLog, self).delete(*args, **kwargs)
         except KeyError:
             self.save(del_flag=True)
+            # Deactivate related objects
             for related_model in self.get_related_models().items():
                 try:
                     related_refs = eval(
