@@ -166,3 +166,4 @@ cython_debug/
 /.idea/vcs.xml
 /MMS/*/migrations
 /.idea/ERP_BACKEND.iml
+ERP_BACKEND.code-workspace

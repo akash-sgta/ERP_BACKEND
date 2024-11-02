@@ -4,6 +4,7 @@ from django.db import models
 from django.utils import timezone
 from django.db.models import Manager
 from django.db.utils import IntegrityError
+from django.apps import apps
 
 # =====================================================================
 
@@ -114,7 +115,38 @@ class ChangeLog(models.Model):
                 return super(ChangeLog, self).delete(*args, **kwargs)
         except KeyError:
             self.save(del_flag=True)
+            for related_model in self.get_related_models().items():
+                try:
+                    related_refs = eval(
+                        "related_model[0].objects.filter({}=self.pk)".format(
+                            related_model[1][0]
+                        )
+                    )
+                    if len(related_refs) == 0:
+                        raise related_model[0].DoesNotExist
+                except related_model[0].DoesNotExist:
+                    pass
+                else:
+                    for related_ref in related_refs:
+                        related_ref.delete()
             return
 
+    def get_related_models(self, on_delete_behaviour=models.CASCADE):
+        related_models = dict()
+        for model in apps.get_models():
+            for field in model._meta.get_fields():
+                if (
+                    isinstance(field, models.ForeignKey)
+                    and field.remote_field.model == self.__class__
+                    and field.remote_field.on_delete == on_delete_behaviour
+                ):
+                    try:
+                        related_models[model]
+                    except KeyError:
+                        related_models.update({model: list()})
+                    finally:
+                        related_models[model].append(field.name)
+        return related_models
+
     def __str__(self):
-        return "[{}] ".format("X" if self.is_active else "-")
+        return "[{}] ".format(True if self.is_active else False)

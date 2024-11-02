@@ -18,11 +18,8 @@ class Profile(ChangeLog):
             "address",
         )
 
-    user = models.ForeignKey(
-        User,
-        on_delete=models.CASCADE,
-    )
-    address = models.ForeignKey(
+    user = models.OneToOneField(User, on_delete=models.CASCADE)
+    address = models.OneToOneField(
         Address,
         on_delete=models.SET_NULL,
         null=True,
@@ -37,6 +34,13 @@ class Profile(ChangeLog):
         File,
         on_delete=models.SET_NULL,
         null=True,
+        related_name="government_id_file",
+    )
+    image_file = models.OneToOneField(
+        File,
+        on_delete=models.SET_NULL,
+        null=True,
+        related_name="image_file",
     )
 
     first_name = models.CharField(
