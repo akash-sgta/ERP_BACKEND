@@ -7,11 +7,17 @@ from util._views.district import District
 from util._views.file_type import FileType
 from util._views.file import File
 from util._views.government_id_type import GovernmentIdType
-from util._views.iso import Iso
+from util._views.company import Company
+
 # =====================================================================
 PATTERN_ID = "(?P<id>\d*)"
 
 urlpatterns = [
+    re_path(
+        rf"company/{PATTERN_ID}",
+        Company.as_view(),
+        name="util__company",
+    ),
     re_path(
         rf"continent/{PATTERN_ID}",
         Continent.as_view(),
@@ -46,11 +52,6 @@ urlpatterns = [
         rf"government_id_type/{PATTERN_ID}",
         GovernmentIdType.as_view(),
         name="util__government_id_type",
-    ),
-    re_path(
-        rf"iso/{PATTERN_ID}",
-        Iso.as_view(),
-        name="util__iso",
     ),
     # re_path(r"signup/$", ff, name="signup"),
 ]

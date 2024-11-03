@@ -1,15 +1,15 @@
 # =====================================================================
 from django.db import models
-from util._models.change_log import ChangeLog
+from util._models.master import Master
 
 # =====================================================================
 
 
-class FileType(ChangeLog):
+class FileType(Master):
 
     class Meta:
         verbose_name_plural = "File Types"
-        unique_together = ("code",)
+        unique_together = Master.Meta.unique_together + ("code",)
 
     code = models.CharField(
         max_length=7,

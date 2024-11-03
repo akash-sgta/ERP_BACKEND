@@ -1,11 +1,11 @@
 # =====================================================================
 from util._serializers.change_log import ChangeLog as Serializer
-from util._models.iso import Iso as Model
+from util._models.company import Company as Model
 
 # =====================================================================
 
 
-class Iso(Serializer):
+class Company(Serializer):
     class Meta:
         model = Model
         _hidden_fields = Serializer._hidden_fields + ()

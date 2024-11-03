@@ -1,9 +1,9 @@
 # =====================================================================
 from django.db import models
-from util._models.change_log import ChangeLog
+from util._models.master import Master
 from util._models.government_id_type import GovernmentIdType
 from util._models.file import File
-from util._models.iso import Iso
+from util._models.country import Country
 from util.functions import validate_phone_number
 from profile._models.address import Address
 from django.contrib.auth.models import User
@@ -11,13 +11,10 @@ from django.contrib.auth.models import User
 # =====================================================================
 
 
-class Profile(ChangeLog):
+class Profile(Master):
     class Meta:
         verbose_name_plural = "Profiles"
-        unique_together = (
-            "user",
-            "address",
-        )
+        unique_together = Master.Meta.unique_together + ("user",)
 
     user = models.OneToOneField(User, on_delete=models.CASCADE)
     address = models.OneToOneField(
@@ -46,15 +43,15 @@ class Profile(ChangeLog):
         blank=True,
         related_name="image_file",
     )
-    phone_office_iso=models.ForeignKey(
-        Iso,
+    phone_office_iso = models.ForeignKey(
+        Country,
         on_delete=models.SET_NULL,
         null=True,
         blank=True,
         related_name="phone_office_iso",
     )
-    phone_home_iso=models.ForeignKey(
-        Iso,
+    phone_home_iso = models.ForeignKey(
+        Country,
         on_delete=models.SET_NULL,
         null=True,
         related_name="phone_home_iso",
@@ -78,7 +75,7 @@ class Profile(ChangeLog):
     email = models.EmailField(
         blank=True,
     )
-    
+
     phone_office_no = models.CharField(
         max_length=15,
         blank=True,

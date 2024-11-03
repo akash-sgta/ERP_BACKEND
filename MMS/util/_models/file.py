@@ -1,16 +1,17 @@
 # =====================================================================
 from django.db import models
-from util._models.change_log import ChangeLog
+from util._models.master import Master
 from util._models.file_type import FileType
 from util.functions import validate_file_name
 
 # =====================================================================
 
 
-class File(ChangeLog):
+class File(Master):
 
     class Meta:
         verbose_name_plural = "Files"
+        unique_together = Master.Meta.unique_together + ("name",)
 
     type = models.ForeignKey(
         FileType,

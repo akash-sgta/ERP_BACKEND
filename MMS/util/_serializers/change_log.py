@@ -16,15 +16,18 @@ class ChangeLog(ModelSerializer):
         "createdBy",
         "changedOn",
         "changedBy",
+        "company",
     )
-    _to_upper_case = ("name",)
 
     def to_internal_value(self, data, *args, **kwargs):
-        for field in self._to_upper_case:
-            try:
-                data[field] = data[field].upper()
-            except KeyError:
-                pass
+        unique_together = self.Meta.model._meta.unique_together
+        if len(unique_together) > 0:
+            for unique_stack in unique_together:
+                for unique_field in unique_stack:
+                    try:
+                        data[unique_field] = data[unique_field].upper()
+                    except KeyError:
+                        pass
         return super(ChangeLog, self).to_internal_value(data, *args, **kwargs)
 
     def is_valid(self, *args, **kwargs):

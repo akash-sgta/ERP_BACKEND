@@ -1,15 +1,15 @@
 # =====================================================================
 from django.db import models
-from util._models.change_log import ChangeLog
+from util._models.master import Master
 
 # =====================================================================
 
 
-class Continent(ChangeLog):
+class Continent(Master):
 
     class Meta:
         verbose_name_plural = "Continents"
-        unique_together = ("name",)
+        unique_together = Master.Meta.unique_together + ("name",)
 
     name = models.CharField(
         max_length=127,

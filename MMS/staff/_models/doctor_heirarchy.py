@@ -1,16 +1,15 @@
 # =====================================================================
 from django.db import models
-from util._models.change_log import ChangeLog
-from util.functions import create_random, validate_string_len
+from util._models.master import Master
 from staff._models.doctor import Doctor
 
 # =====================================================================
 
 
-class DoctorHierarchy(ChangeLog):
+class DoctorHierarchy(Master):
     class Meta:
         verbose_name_plural = "Doctor Hierarchy"
-        unique_together = (
+        unique_together = Master.Meta.unique_together + (
             "supervisor",
             "subordinate",
         )
@@ -33,6 +32,6 @@ class DoctorHierarchy(ChangeLog):
     def __str__(self):
         return "{}{}=>{}".format(
             super(DoctorHierarchy, self).__str__(),
-            self.superviser,
+            self.supervisor,
             self.subordinate,
         )

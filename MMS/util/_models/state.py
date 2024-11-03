@@ -1,14 +1,14 @@
 # =====================================================================
 from django.db import models
 from util._models.country import Country
-from util._models.change_log import ChangeLog
+from util._models.master import Master
 
 # =====================================================================
 
 
-class State(ChangeLog):
+class State(Master):
     class Meta:
-        unique_together = (
+        unique_together = Master.Meta.unique_together + (
             "country",
             "name",
         )
@@ -28,6 +28,4 @@ class State(ChangeLog):
         return super(State, self).save(*args, **kwargs)
 
     def __str__(self):
-        return "{}->{}{}".format(
-            self.country, super(State, self).__str__(), self.name
-        )
+        return "{}->{}{}".format(self.country, super(State, self).__str__(), self.name)

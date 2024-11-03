@@ -1,14 +1,19 @@
 # =====================================================================
 from django.db import models
-from util._models.change_log import ChangeLog
+from util._models.master import Master
 from util._models.district import District
 
 # =====================================================================
 
 
-class Address(ChangeLog):
+class Address(Master):
     class Meta:
         verbose_name_plural = "Addresses"
+        unique_together = Master.Meta.unique_together + ("id",)
+
+    id = models.AutoField(
+        primary_key=True,
+    )
 
     district = models.ForeignKey(
         District,

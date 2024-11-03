@@ -27,10 +27,13 @@ class ChangeLog(APIView):
     _pop = ("csrfmiddlewaretoken",)
     _keys = ("id",)
     _blank_return = ReturnList([], serializer=None)
+
     allowed_methods = "GET,POST,UPDATE,DELETE,OPTIONS".split(",")
 
     serializer_class = Serializer
     model = Model
+
+    C_USER_ID = "USER_ID"
 
     def _get_vars(self, **kwargs):
         data = dict()

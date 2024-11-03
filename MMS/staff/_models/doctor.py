@@ -1,15 +1,15 @@
 # =====================================================================
 from django.db import models
-from util._models.change_log import ChangeLog
-from util.functions import create_random, validate_string_len
+from util._models.master import Master
 from profile._models.profile import Profile
 
 # =====================================================================
 
 
-class Doctor(ChangeLog):
+class Doctor(Master):
     class Meta:
         verbose_name_plural = "Doctors"
+        unique_together = Master.Meta.unique_together + ("profile",)
 
     profile = models.OneToOneField(
         Profile,
@@ -20,6 +20,4 @@ class Doctor(ChangeLog):
         return super(Doctor, self).save(*args, **kwargs)
 
     def __str__(self):
-        return "{}->{}{}".format(
-            self.profile, super(Doctor, self).__str__(), self.pid
-        )
+        return "{}->{}{}".format(self.profile, super(Doctor, self).__str__(), self.pk)

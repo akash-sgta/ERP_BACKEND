@@ -1,20 +1,23 @@
 # =====================================================================
-from django.db import models
+from django.db import models, IntegrityError
 from django.utils import timezone
-from django.db.utils import IntegrityError
 
-from util._models._manager.change_log import ChangeLogModelManager
 from util.functions import update_change_log, update_active_status, update_reference_objects
 
 
 # =====================================================================
 
 
-class ChangeLog(models.Model):
+class Company(models.Model):
 
     class Meta:
-        abstract = True
-        unique_together = ()
+        verbose_name_plural = "Companies"
+        unique_together = ("name",)
+
+    name = models.CharField(
+        max_length=127,
+        blank=False,
+    )
 
     createdOn = models.DateTimeField(
         blank=True,
@@ -37,10 +40,10 @@ class ChangeLog(models.Model):
         default=True,
     )
 
-    objects = ChangeLogModelManager()
-
     def save(self, del_flag=False, *args, **kwargs):
         C_DEL_FLAG = "del_flag"
+
+        self.name = self.name.upper()
 
         kwargs.update({C_DEL_FLAG: del_flag})
         update_change_log(_model=self, *args, **kwargs)
@@ -48,8 +51,8 @@ class ChangeLog(models.Model):
         kwargs.pop(C_DEL_FLAG)
 
         try:
-            obj_ref = super(ChangeLog, self).save(*args, **kwargs)
-        except IntegrityError:
+            obj_ref = super(Company, self).save(*args, **kwargs)
+        except IntegrityError as e:
             pass
         else:
             if _stat[0] != _stat[1]:
@@ -63,9 +66,9 @@ class ChangeLog(models.Model):
 
         try:
             if kwargs[C_FORCED]:
-                return super(ChangeLog, self).delete(*args, **kwargs)
+                return super(Company, self).delete(*args, **kwargs)
         except KeyError:
             return self.save(del_flag=True)
 
     def __str__(self):
-        return "[{}]".format("X" if self.is_active else "")
+        return "[{}]{}".format("X" if self.is_active else "", self.name)

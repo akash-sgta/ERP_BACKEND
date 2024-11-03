@@ -14,8 +14,8 @@ from util._admins.file_type import FileType as Admin_Util_FileType
 from util._models.file_type import FileType as Model_Util_FileType
 from util._admins.file import File as Admin_Util_File
 from util._models.file import File as Model_Util_File
-from util._admins.iso import Iso as Admin_Util_Iso
-from util._models.iso import Iso as Model_Util_Iso
+from util._admins.company import Company as Admin_Util_Company
+from util._models.company import Company as Model_Util_Company
 
 # =====================================================================
 
@@ -26,4 +26,4 @@ admin.site.register(Model_Util_District, Admin_Util_District)
 admin.site.register(Model_Util_GovernmentIdType, Admin_Util_GovernmentIdType)
 admin.site.register(Model_Util_FileType, Admin_Util_FileType)
 admin.site.register(Model_Util_File, Admin_Util_File)
-admin.site.register(Model_Util_Iso, Admin_Util_Iso)
+admin.site.register(Model_Util_Company, Admin_Util_Company)
