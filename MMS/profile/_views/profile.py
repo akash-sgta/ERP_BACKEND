@@ -1,12 +1,12 @@
 # =====================================================================
 from profile._serializers.profile import Profile as Serializer
 from profile._models.profile import Profile as Model
-from util._views.change_log import ChangeLog
+from util._views.master import Master
 
 # =====================================================================
 
 
-class Profile(ChangeLog):
+class Profile(Master):
 
     queryset = Model.objects.all()
     serializer_class = Serializer

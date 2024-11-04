@@ -1,12 +1,12 @@
 # =====================================================================
 from util._serializers.district import District as Serializer
 from util._models.district import District as Model
-from util._views.change_log import ChangeLog
+from util._views.master import Master
 
 # =====================================================================
 
 
-class District(ChangeLog):
+class District(Master):
 
     queryset = Model.objects.all()
     serializer_class = Serializer

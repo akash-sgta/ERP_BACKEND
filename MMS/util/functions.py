@@ -12,6 +12,153 @@ from math import floor
 import string
 import random
 
+from rest_framework.views import APIView
+from django.http import QueryDict
+from django.template.response import TemplateResponse
+from rest_framework.renderers import TemplateHTMLRenderer, JSONRenderer
+from rest_framework.utils.serializer_helpers import ReturnList
+from rest_framework.response import Response
+from rest_framework import status
+from django.db.models import ManyToOneRel
+
+C_BLANK_RESPONSE = ReturnList([], serializer=None)
+C_FORM_POP = ("csrfmiddlewaretoken",)
+C_KEYS = ("id",)
+
+
+# ===================================================================== VIEW
+def cust_get_vars(_model: APIView, **kwargs):
+    data = dict()
+    for key in _model._keys:
+        try:
+            if kwargs[key] == "":
+                raise KeyError
+            data[key] = kwargs[key]
+        except KeyError:
+            pass
+    if len(data) == 0:
+        data = None
+    return data
+
+
+def cust_get(_model: APIView, *args, **kwargs):
+    vars = _model._get_vars(**kwargs)
+    if vars is None:
+        model_ref = _model.model.objects._all()
+    else:
+        try:
+            model_ref = _model.model.objects._filter(**vars)
+            if len(model_ref) == 0:
+                raise _model.model.DoesNotExist
+        except _model.model.DoesNotExist:
+            model_ref = None
+    if model_ref is not None:
+        serializer_ref = _model.serializer_class(model_ref, many=True)
+        _response = Response(data=serializer_ref.data, status=status.HTTP_200_OK)
+    else:
+        _response = Response(data=C_BLANK_RESPONSE, status=status.HTTP_404_NOT_FOUND)
+    return _response
+
+
+def cust_post(_model: APIView, data: dict, *args, **kwargs):
+    data = data.copy()
+    for element in C_FORM_POP:
+        data.pop(element, None)
+    if type(data) == QueryDict:
+        data_dict = dict()
+        for key in data.keys():
+            pair = {key: data.getlist(key)[0]}
+            data_dict.update(pair)
+        data = data_dict
+        del data_dict, pair
+    serializer_ref = _model.serializer_class(data=data)
+    if serializer_ref.is_valid():
+        serializer_ref.save()
+        _response = Response(data=serializer_ref.data, status=status.HTTP_201_CREATED)
+    else:
+        _response = Response(data=serializer_ref.errors, status=status.HTTP_400_BAD_REQUEST)
+    return _response
+
+
+def cust_put(_model: APIView, data: dict, *args, **kwargs):
+    data = data.copy()
+    vars = cust_get_vars(**kwargs)
+    if vars is None:
+        _response = Response(data=C_BLANK_RESPONSE, status=status.HTTP_404_NOT_FOUND)
+    else:
+        try:
+            model_ref = _model.model.objects._filter(**vars)
+            if len(model_ref) == 0:
+                raise _model.model.DoesNotExist
+        except _model.model.DoesNotExist:
+            model_ref = None
+    if model_ref is not None:
+        model_ref = model_ref[0]
+        data = data.copy()
+        for element in C_FORM_POP:
+            data.pop(element, None)
+        if type(data) == QueryDict:
+            data_dict = dict()
+            for key in data.keys():
+                pair = {key: data.getlist(key)[0]}
+                data_dict.update(pair)
+            data = data_dict
+            del data_dict, pair
+        serializer_ref = _model.serializer_class(model_ref, data=data)
+        if serializer_ref.is_valid():
+            serializer_ref.save()
+            _response = Response(data=serializer_ref.data, status=status.HTTP_202_ACCEPTED)
+        else:
+            _response = Response(data=serializer_ref.errors, status=status.HTTP_400_BAD_REQUEST)
+    else:
+        _response = Response(data=C_BLANK_RESPONSE, status=status.HTTP_404_NOT_FOUND)
+    return _response
+
+
+def cust_delete(_model: APIView, *args, **kwargs):
+    vars = cust_get_vars(**kwargs)
+    if vars is None:
+        _response = Response(data=C_BLANK_RESPONSE, status=status.HTTP_404_NOT_FOUND)
+    else:
+        try:
+            model_ref = _model.model.objects._filter(**vars)
+            if len(model_ref) == 0:
+                raise _model.model.DoesNotExist
+        except _model.model.DoesNotExist:
+            model_ref = None
+    if model_ref is not None:
+        serializer_ref = _model.serializer_class(model_ref, many=True)
+        model_ref = model_ref[0]
+        model_ref.delete()
+        _response = Response(data=serializer_ref.data, status=status.HTTP_204_NO_CONTENT)
+    else:
+        _response = Response(data=C_BLANK_RESPONSE, status=status.HTTP_404_NOT_FOUND)
+    return _response
+
+
+def cust_options(_model: APIView, request, *args, **kwargs):
+    response = super(APIView, _model).options(request, *args, **kwargs)
+
+    name = _model.model._meta.model_name.capitalize()
+    fields = dict()
+    for field in _model.model._meta.get_fields():
+        if (
+            field.name not in _model.serializer_class.Meta._hidden_fields
+            and field.name not in _model.serializer_class.Meta.read_only_fields
+            and not (isinstance(field, ManyToOneRel))  # No back reference
+        ):
+            fields.update({field.name: f"{field.get_internal_type()}:{getattr(field, 'max_length', None)}"})
+
+    custom_data = {
+        "description": f"This is the API for managing {name} data.",
+        "allowed_methods": _model.allowed_methods,
+        "fields": fields,
+    }
+    response.data.update(custom_data)
+
+    _response = Response(response.data, status=status.HTTP_200_OK)
+    return _response
+
 
 # ===================================================================== SERIALIZER
 def cust_is_valid(_model: ModelSerializer, *args, **kwargs):

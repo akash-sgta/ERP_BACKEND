@@ -1,12 +1,12 @@
 # =====================================================================
 from staff._serializers.nurse import Nurse as Serializer
 from staff._models.nurse import Nurse as Model
-from util._views.change_log import ChangeLog
+from util._views.master import Master
 
 # =====================================================================
 
 
-class Nurse(ChangeLog):
+class Nurse(Master):
 
     queryset = Model.objects.all()
     serializer_class = Serializer

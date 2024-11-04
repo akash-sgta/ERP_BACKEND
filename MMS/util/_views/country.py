@@ -1,12 +1,12 @@
 # =====================================================================
 from util._serializers.country import Country as Serializer
 from util._models.country import Country as Model
-from util._views.change_log import ChangeLog
+from util._views.master import Master
 
 # =====================================================================
 
 
-class Country(ChangeLog):
+class Country(Master):
 
     queryset = Model.objects.all()
     serializer_class = Serializer

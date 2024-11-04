@@ -1,12 +1,12 @@
 # =====================================================================
 from util._serializers.file_type import FileType as Serializer
 from util._models.file_type import FileType as Model
-from util._views.change_log import ChangeLog
+from util._views.master import Master
 
 # =====================================================================
 
 
-class FileType(ChangeLog):
+class FileType(Master):
 
     queryset = Model.objects.all()
     serializer_class = Serializer
