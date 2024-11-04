@@ -16,6 +16,6 @@ def logger_view(request):
     file_path = os.path.join(settings.BASE_DIR, "logfile.log")
     with open(file_path, "r") as file:
         for line in file:
-            html_script = "{}<br>{}".format(html_script, line.strip())
+            html_script = "{}<br>{}".format(line.strip(), html_script)
     html_script = "<html>{}</html>".format(html_script)
     return HttpResponse(html_script)
