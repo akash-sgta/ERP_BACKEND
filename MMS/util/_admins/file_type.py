@@ -1,16 +1,16 @@
 # =====================================================================
-from util._admins.change_log import ChangeLog
+from util._admins.master import Master
 
 # =====================================================================
 
 
-class FileType(ChangeLog):
-    list_display = ChangeLog.list_display + (
+class FileType(Master):
+    list_display = Master.list_display + (
         "code",
         "name",
     )
-    list_filter = ChangeLog.list_filter + ()
-    search_fields = ChangeLog.search_fields + (
+    list_filter = Master.list_filter + ()
+    search_fields = Master.search_fields + (
         "code",
         "name",
     )

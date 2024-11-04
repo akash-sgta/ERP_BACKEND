@@ -1,10 +1,10 @@
 # =====================================================================
-from util._admins.change_log import ChangeLog
+from util._admins.master import Master
 
 # =====================================================================
 
 
-class District(ChangeLog):
-    list_display = ChangeLog.list_display + ("name",)
-    list_filter = ChangeLog.list_filter + ("state",)
-    search_fields = ChangeLog.search_fields + ("name",)
+class District(Master):
+    list_display = Master.list_display + ("name",)
+    list_filter = Master.list_filter + ("state",)
+    search_fields = Master.search_fields + ("name",)

@@ -10,7 +10,7 @@ from util._views.government_id_type import GovernmentIdType
 from util._views.company import Company
 
 # =====================================================================
-PATTERN_ID = "(?P<id>\d*)"
+PATTERN_ID = r"(?P<id>\d*)"
 
 urlpatterns = [
     re_path(

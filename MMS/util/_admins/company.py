@@ -1,10 +1,17 @@
 # =====================================================================
-from util._admins.change_log import ChangeLog
+from django.contrib import admin
 
 # =====================================================================
 
 
-class Company(ChangeLog):
-    list_display = ChangeLog.list_display + ("name",)
-    list_filter = ChangeLog.list_filter + ()
-    search_fields = ChangeLog.search_fields + ("name",)
+class Company(admin.ModelAdmin):
+    list_display = ("is_active",) + ("name",)
+    list_filter = ("is_active",) + ("name",)
+    readonly_fields = (
+        "is_active",
+        "createdOn",
+        "createdBy",
+        "changedOn",
+        "changedBy",
+    )
+    search_fields = ("name",)
