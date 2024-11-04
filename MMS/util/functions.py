@@ -1,7 +1,7 @@
 # =====================================================================
 from django.conf import settings
 from django.core.exceptions import ObjectDoesNotExist
-from django.db import models, IntegrityError
+from django.db import models, IntegrityError, transaction
 from django.apps import apps
 from rest_framework.exceptions import ErrorDetail
 from rest_framework.serializers import ModelSerializer
@@ -29,7 +29,7 @@ C_KEYS = ("id",)
 # ===================================================================== VIEW
 def cust_get_vars(_model: APIView, **kwargs):
     data = dict()
-    for key in _model._keys:
+    for key in C_KEYS:
         try:
             if kwargs[key] == "":
                 raise KeyError
@@ -116,7 +116,7 @@ def cust_put(_model: APIView, data: dict, *args, **kwargs):
 
 
 def cust_delete(_model: APIView, *args, **kwargs):
-    vars = cust_get_vars(**kwargs)
+    vars = cust_get_vars(_model=_model, **kwargs)
     if vars is None:
         _response = Response(data=C_BLANK_RESPONSE, status=status.HTTP_404_NOT_FOUND)
     else:
@@ -166,7 +166,7 @@ def cust_is_valid(_model: ModelSerializer, *args, **kwargs):
     unique_together = _model.Meta.model._meta.unique_together
     expression = str()
     if len(unique_together) > 0:
-        expression = "self.Meta.model.objects.get("
+        expression = "_model.Meta.model.objects.get("
         for unique_stack in unique_together:
             for unique_field in unique_stack:
                 try:
@@ -176,7 +176,7 @@ def cust_is_valid(_model: ModelSerializer, *args, **kwargs):
                 else:
                     try:
                         _model.initial_data[unique_field] = _model.initial_data[unique_field].upper()
-                        expression = "{}{}=self.initial_data['{}'],".format(
+                        expression = "{}{}=_model.initial_data['{}'],".format(
                             expression,
                             unique_field,
                             unique_field,
@@ -227,6 +227,16 @@ def cust_to_internal_value(_model: ModelSerializer, data):
 
 
 # ===================================================================== MODEL
+def cust_check_save(_model: models.Model, *args, **kwargs):
+    try:
+        super(_model.__class__, _model).save(*args, **kwargs)
+    except IntegrityError:
+        is_valid = False
+    else:
+        is_valid = True
+    return is_valid
+
+
 def update_change_log(_model: models.Model, *args, **kwargs):
     C_USER = "user"
     C_USER_DEFAULT = "DEFAULT"

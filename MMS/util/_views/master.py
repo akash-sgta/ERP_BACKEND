@@ -8,6 +8,5 @@ from util._views.change_log import ChangeLog
 
 class Master(ChangeLog):
 
-    queryset = Model.objects.all()
     serializer_class = Serializer
     model = Model

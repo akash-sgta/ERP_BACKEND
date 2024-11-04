@@ -21,6 +21,8 @@ from rest_framework import permissions
 from drf_yasg.views import get_schema_view
 from drf_yasg import openapi
 
+from MMS._views.logger import logger_view
+
 SWAGGER = "swagger"
 REDOC = "redoc"
 
@@ -44,6 +46,10 @@ urlpatterns = [
     re_path(
         r"^admin/",
         admin.site.urls,
+    ),
+    re_path(
+        r"^log/",
+        logger_view,
     ),
     # =========================================================
     re_path(

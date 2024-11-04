@@ -3,8 +3,13 @@ from django.db import models, transaction
 from django.utils import timezone
 from django.db.utils import IntegrityError
 
-from util._models._manager.change_log import ChangeLogModelManager
-from util.functions import update_change_log, update_active_status, update_reference_objects
+from util._models._manager.change_log import ChangeLogModelManager as ModelManager
+from util.functions import (
+    update_change_log,
+    update_active_status,
+    update_reference_objects,
+    cust_check_save,
+)
 
 
 # =====================================================================
@@ -37,18 +42,10 @@ class ChangeLog(models.Model):
         default=True,
     )
 
-    objects = ChangeLogModelManager()
+    objects = ModelManager()
 
     def check_save(self, *args, **kwargs):
-        with transaction.atomic():
-            try:
-                super(ChangeLog, self).save(*args, **kwargs)
-            except IntegrityError:
-                is_valid = False
-            else:
-                is_valid = True
-            transaction.set_rollback(True)
-        return is_valid
+        return cust_check_save(_model=self, *args, **kwargs)
 
     def save(self, del_flag=False, *args, **kwargs):
         C_DEL_FLAG = "del_flag"
@@ -62,6 +59,7 @@ class ChangeLog(models.Model):
             if _stat[0] != _stat[1]:
                 kwargs.update({C_DEL_FLAG: del_flag})
                 update_reference_objects(_model=self, *args, **kwargs)
+                kwargs.pop(C_DEL_FLAG)
 
         return super(ChangeLog, self).save(*args, **kwargs)
 

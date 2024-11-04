@@ -12,7 +12,6 @@ class ChangeLog(APIView):
 
     allowed_methods = "GET,POST,UPDATE,DELETE,OPTIONS".split(",")
 
-    queryset = Model.objects.all()
     serializer_class = Serializer
     model = Model
 

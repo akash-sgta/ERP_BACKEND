@@ -2,7 +2,13 @@
 from django.db import models, IntegrityError, transaction
 from django.utils import timezone
 
-from util.functions import update_change_log, update_active_status, update_reference_objects
+from util._models._manager.company import CompanyModelManager as ModelManager
+from util.functions import (
+    update_change_log,
+    update_active_status,
+    update_reference_objects,
+    cust_check_save,
+)
 
 
 # =====================================================================
@@ -40,16 +46,10 @@ class Company(models.Model):
         default=True,
     )
 
+    objects = ModelManager()
+
     def check_save(self, *args, **kwargs):
-        with transaction.atomic():
-            try:
-                super(Company, self).save(*args, **kwargs)
-            except IntegrityError:
-                is_valid = False
-            else:
-                is_valid = True
-            transaction.set_rollback(True)
-        return is_valid
+        return cust_check_save(_model=self, *args, **kwargs)
 
     def save(self, del_flag=False, *args, **kwargs):
         C_DEL_FLAG = "del_flag"
@@ -65,6 +65,7 @@ class Company(models.Model):
             if _stat[0] != _stat[1]:
                 kwargs.update({C_DEL_FLAG: del_flag})
                 update_reference_objects(_model=self, *args, **kwargs)
+                kwargs.pop(C_DEL_FLAG)
 
         return super(Company, self).save(*args, **kwargs)
 
