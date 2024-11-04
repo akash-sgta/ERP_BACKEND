@@ -1,5 +1,5 @@
 # =====================================================================
-from util._serializers.change_log import ChangeLog as Serializer
+from util._serializers.master import Master as Serializer
 from util._models.continent import Continent as Model
 
 # =====================================================================
