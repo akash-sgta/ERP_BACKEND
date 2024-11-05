@@ -228,12 +228,14 @@ def cust_to_internal_value(_model: ModelSerializer, data):
 
 # ===================================================================== MODEL
 def cust_check_save(_model: models.Model, *args, **kwargs):
-    try:
-        super(_model.__class__, _model).save(*args, **kwargs)
-    except IntegrityError:
-        is_valid = False
-    else:
-        is_valid = True
+    with transaction.atomic():
+        try:
+            super(_model.__class__, _model).save(*args, **kwargs)
+        except IntegrityError:
+            is_valid = False
+        else:
+            is_valid = True
+        transaction.set_rollback(True)
     return is_valid
 
 

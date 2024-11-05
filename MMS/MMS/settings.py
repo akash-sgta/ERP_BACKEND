@@ -144,21 +144,32 @@ REST_FRAMEWORK = {
     ],
 }
 
-LOGGING = {
-    "version": 1,
-    "disable_existing_loggers": False,
-    "handlers": {
-        "file": {
-            "level": "DEBUG",
-            "class": "logging.FileHandler",
-            "filename": os.path.join(BASE_DIR, "logfile.log"),
+# ===================================== LOGGING ======================================
+try:
+    os.remove(os.path.join(BASE_DIR, "logfile.log"))
+except FileNotFoundError:
+    print("[!] No Log file to be deleted")
+except Exception as e:
+    pass
+else:
+    print("[.] Old Log file deleted")
+
+if not DEBUG:
+    LOGGING = {
+        "version": 1,
+        "disable_existing_loggers": False,
+        "handlers": {
+            "file": {
+                "level": "DEBUG",
+                "class": "logging.FileHandler",
+                "filename": os.path.join(BASE_DIR, "logfile.log"),
+            },
         },
-    },
-    "loggers": {
-        "django": {
-            "handlers": ["file"],
-            "level": "DEBUG",
-            "propagate": True,
+        "loggers": {
+            "django": {
+                "handlers": ["file"],
+                "level": "DEBUG",
+                "propagate": True,
+            },
         },
-    },
-}
+    }

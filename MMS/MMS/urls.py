@@ -50,6 +50,7 @@ urlpatterns = [
     re_path(
         r"^log/",
         logger_view,
+        name="log",
     ),
     # =========================================================
     re_path(
