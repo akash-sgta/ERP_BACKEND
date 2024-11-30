@@ -33,4 +33,5 @@ class Company(ModelSerializer):
         return super(Company, self).to_internal_value(data)
 
     def is_valid(self, *args, **kwargs):
-        return cust_is_valid(_model=self, *args, **kwargs)
+        is_valid = super(Company, self).is_valid(*args, **kwargs)
+        return cust_is_valid(_model=self, is_valid=is_valid, *args, **kwargs)

@@ -55,11 +55,14 @@ class ChangeLog(models.Model):
         _stat = update_active_status(_model=self, *args, **kwargs)
         kwargs.pop(C_DEL_FLAG)
 
-        if self.check_save():
+        _check_save = self.check_save()
+        if _check_save[0]:
             if _stat[0] != _stat[1]:
                 kwargs.update({C_DEL_FLAG: del_flag})
                 update_reference_objects(_model=self, *args, **kwargs)
                 kwargs.pop(C_DEL_FLAG)
+        else:
+            pass
 
         return super(ChangeLog, self).save(*args, **kwargs)
 

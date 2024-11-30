@@ -61,6 +61,9 @@ def cust_get(_model: APIView, *args, **kwargs):
 
 
 def cust_post(_model: APIView, data: dict, *args, **kwargs):
+    from util._models.company import Company
+
+    # =======================================================
     data = data.copy()
     for element in C_FORM_POP:
         data.pop(element, None)
@@ -71,7 +74,9 @@ def cust_post(_model: APIView, data: dict, *args, **kwargs):
             data_dict.update(pair)
         data = data_dict
         del data_dict, pair
+
     serializer_ref = _model.serializer_class(data=data)
+    serializer_ref.initial_data["company"] = Company.objects._get(id=1)
     if serializer_ref.is_valid():
         serializer_ref.save()
         _response = Response(data=serializer_ref.data, status=status.HTTP_201_CREATED)
@@ -137,13 +142,12 @@ def cust_delete(_model: APIView, *args, **kwargs):
 
 
 def cust_options(_model: APIView, request, *args, **kwargs):
-    response = super(APIView, _model).options(request, *args, **kwargs)
 
     name = _model.model._meta.model_name.capitalize()
     fields = dict()
     for field in _model.model._meta.get_fields():
         if (
-            field.name not in _model.serializer_class.Meta._hidden_fields
+            field.name not in _model.serializer_class.Meta.hidden_fields
             and field.name not in _model.serializer_class.Meta.read_only_fields
             and not (isinstance(field, ManyToOneRel))  # No back reference
         ):
@@ -154,14 +158,17 @@ def cust_options(_model: APIView, request, *args, **kwargs):
         "allowed_methods": _model.allowed_methods,
         "fields": fields,
     }
-    response.data.update(custom_data)
 
-    _response = Response(response.data, status=status.HTTP_200_OK)
-    return _response
+    return Response(custom_data, status=status.HTTP_200_OK)
 
 
 # ===================================================================== SERIALIZER
 def cust_is_valid(_model: ModelSerializer, *args, **kwargs):
+    try:
+        is_valid = kwargs["is_valid"]
+    except KeyError:
+        is_valid = True
+
     # Get Unique ref stack obj
     unique_together = _model.Meta.model._meta.unique_together
     expression = str()
@@ -190,8 +197,6 @@ def cust_is_valid(_model: ModelSerializer, *args, **kwargs):
         except ObjectDoesNotExist:
             obj_ref = None
 
-    is_valid = super(_model.__class__, _model).is_valid(*args, **kwargs)
-
     if not is_valid:
         if obj_ref is None:
             _message_01 = "Contact Administrator : email@gmail.com"
@@ -214,7 +219,7 @@ def cust_is_valid(_model: ModelSerializer, *args, **kwargs):
     return is_valid
 
 
-def cust_to_internal_value(_model: ModelSerializer, data):
+def cust_to_internal_value(_model: ModelSerializer, data: dict):
     unique_together = _model.Meta.model._meta.unique_together
     if len(unique_together) > 0:
         for unique_stack in unique_together:
@@ -223,20 +228,22 @@ def cust_to_internal_value(_model: ModelSerializer, data):
                     data[unique_field] = data[unique_field].upper()
                 except KeyError:
                     pass
-    return None
+                except AttributeError:
+                    pass
+    return data
 
 
 # ===================================================================== MODEL
 def cust_check_save(_model: models.Model, *args, **kwargs):
-    with transaction.atomic():
-        try:
-            super(_model.__class__, _model).save(*args, **kwargs)
-        except IntegrityError:
-            is_valid = False
-        else:
-            is_valid = True
-        transaction.set_rollback(True)
-    return is_valid
+    try:
+        _model.full_clean()
+    except IntegrityError as e:
+        is_valid, messages = False, e.messages
+    except ValidationError as e:
+        is_valid, messages = False, e.messages
+    else:
+        is_valid, messages = True, None
+    return is_valid, messages
 
 
 def update_change_log(_model: models.Model, *args, **kwargs):

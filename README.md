@@ -30,5 +30,8 @@ python mms/manage.py makemigrations profile staff util patient
 python mms/manage.py migrate
 ```
 ```commandline
+python mms/manage.py test util
+```
+```commandline
 python mms/manage.py runserver 127.0.0.1:8000
 ```

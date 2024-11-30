@@ -22,7 +22,7 @@
 				"justMyCode": true
 			},
 			{
-				"name": "migrate1",
+				"name": "makemigrations",
 				"type": "debugpy",
 				"request": "launch",
 				"program": "${workspaceFolder}${pathSeparator}MMS${pathSeparator}manage.py",
@@ -31,7 +31,7 @@
 				"justMyCode": true
 			},
 			{
-				"name": "migrate2",
+				"name": "migrate",
 				"type": "debugpy",
 				"request": "launch",
 				"program": "${workspaceFolder}${pathSeparator}MMS${pathSeparator}manage.py",
