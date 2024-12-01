@@ -49,11 +49,13 @@ class ChangeLog(models.Model):
 
     def save(self, del_flag=False, *args, **kwargs):
         C_DEL_FLAG = "del_flag"
+        C_USER = "user"
 
-        kwargs.update({C_DEL_FLAG: del_flag})
+        kwargs.update({C_DEL_FLAG: del_flag, C_USER: self.changedBy})
         update_change_log(_model=self, *args, **kwargs)
         _stat = update_active_status(_model=self, *args, **kwargs)
         kwargs.pop(C_DEL_FLAG)
+        kwargs.pop(C_USER)
 
         _check_save = self.check_save()
         if _check_save[0]:
@@ -71,6 +73,7 @@ class ChangeLog(models.Model):
 
         try:
             if kwargs[C_FORCED]:
+                kwargs.pop(C_FORCED)
                 return super(ChangeLog, self).delete(*args, **kwargs)
         except KeyError:
             return self.save(del_flag=True)

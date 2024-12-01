@@ -19,4 +19,4 @@ class Master(ChangeLog):
     )
 
     def __str__(self):
-        return "{}{}".format(super(Master, self).__str__(), self.company)
+        return "{}.{}".format(self.company, super(Master, self).__str__())

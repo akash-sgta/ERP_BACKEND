@@ -53,13 +53,15 @@ class Company(models.Model):
 
     def save(self, del_flag=False, *args, **kwargs):
         C_DEL_FLAG = "del_flag"
+        C_USER = "user"
 
         self.name = self.name.upper()
 
-        kwargs.update({C_DEL_FLAG: del_flag})
+        kwargs.update({C_DEL_FLAG: del_flag, C_USER: self.changedBy})
         update_change_log(_model=self, *args, **kwargs)
         _stat = update_active_status(_model=self, *args, **kwargs)
         kwargs.pop(C_DEL_FLAG)
+        kwargs.pop(C_USER)
 
         if self.check_save():
             if _stat[0] != _stat[1]:
@@ -74,6 +76,7 @@ class Company(models.Model):
 
         try:
             if kwargs[C_FORCED]:
+                kwargs.pop(C_FORCED)
                 return super(Company, self).delete(*args, **kwargs)
         except KeyError:
             return self.save(del_flag=True)

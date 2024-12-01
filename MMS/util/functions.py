@@ -27,7 +27,7 @@ C_KEYS = ("id",)
 
 
 # ===================================================================== VIEW
-def cust_get_vars(_model: APIView, **kwargs):
+def cust_get_vars(_model: APIView = None, **kwargs):
     data = dict()
     for key in C_KEYS:
         try:
@@ -76,6 +76,7 @@ def cust_post(_model: APIView, data: dict, *args, **kwargs):
         del data_dict, pair
 
     serializer_ref = _model.serializer_class(data=data)
+    # TODO : Get the company connection from the user data
     serializer_ref.initial_data["company"] = Company.objects._get(id=1)
     if serializer_ref.is_valid():
         serializer_ref.save()
@@ -87,7 +88,7 @@ def cust_post(_model: APIView, data: dict, *args, **kwargs):
 
 def cust_put(_model: APIView, data: dict, *args, **kwargs):
     data = data.copy()
-    vars = cust_get_vars(**kwargs)
+    vars = cust_get_vars(_model=_model, **kwargs)
     if vars is None:
         _response = Response(data=C_BLANK_RESPONSE, status=status.HTTP_404_NOT_FOUND)
     else:
@@ -208,13 +209,16 @@ def cust_is_valid(_model: ModelSerializer, *args, **kwargs):
                     _message_01 = "Contact Administrator : email@gmail.com"
                 else:
                     _message_01 = "Deleted Entry Exists"
-        for error_index in range(len(_model.errors["non_field_errors"])):
-            try:
-                if type(_model.errors["non_field_errors"][error_index]) == ErrorDetail:
-                    if _model.errors["non_field_errors"][error_index].code == "unique":
-                        _model._errors["non_field_errors"][error_index] = ErrorDetail(string=_message_01, code="admin")
-            except KeyError:
-                pass
+        try:
+            for error_index in range(len(_model.errors["non_field_errors"])):
+                try:
+                    if type(_model.errors["non_field_errors"][error_index]) == ErrorDetail:
+                        if _model.errors["non_field_errors"][error_index].code == "unique":
+                            _model._errors["non_field_errors"][error_index] = ErrorDetail(string=_message_01, code="admin")
+                except KeyError:
+                    pass
+        except KeyError:
+            pass
 
     return is_valid
 

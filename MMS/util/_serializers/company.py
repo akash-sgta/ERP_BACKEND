@@ -14,10 +14,10 @@ class Company(ModelSerializer):
 
     class Meta:
         model = Model
-        _hidden_fields = ("is_active",)
+        hidden_fields = ("is_active",)
         fields = list()
         for field in model._meta.fields:
-            if field.name not in _hidden_fields:
+            if field.name not in hidden_fields:
                 fields.append(field.name)
         read_only_fields = (
             "id",

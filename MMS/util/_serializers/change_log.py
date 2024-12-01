@@ -21,7 +21,6 @@ class ChangeLog(ModelSerializer):
             "createdBy",
             "changedOn",
             "changedBy",
-            "company",
         )
 
     def to_internal_value(self, data):
@@ -36,7 +35,7 @@ class ChangeLog(ModelSerializer):
 
     def is_valid(self, *args, **kwargs):
         is_valid = super(ChangeLog, self).is_valid(*args, **kwargs)
-        return cust_is_valid(_model=self, is_valid=True, *args, **kwargs)
+        return cust_is_valid(_model=self, is_valid=is_valid, *args, **kwargs)
 
     def update(self, instance, validated_data):
         # for key, value in validated_data.items():
