@@ -24,14 +24,14 @@ class ContinentTestCase(MasterTestCase):
             changedBy="tester",
         )
 
-    def test_01(self):
+    def test_create_01(self):
         """
         Test creating a Continent model instance.
         """
         self.assertEqual(self.model_ref.name, self.model_name.upper())
         self.assertTrue(self.model_ref.is_active)
 
-    def test_02(self):
+    def test_update_01(self):
         """
         Test updating a Continent model instance.
         """
@@ -39,7 +39,7 @@ class ContinentTestCase(MasterTestCase):
         self.model_ref.save()
         self.assertEqual(self.model_ref.changedBy, "TESTER2")
 
-    def test_03(self):
+    def test_read_01(self):
         """
         Test the string representation of Continent model.
         """
@@ -52,7 +52,7 @@ class ContinentTestCase(MasterTestCase):
             ),
         )
 
-    def test_04(self):
+    def test_delete_01(self):
         """
         Test soft deleting a Continent model instance.
         """
@@ -63,7 +63,7 @@ class ContinentTestCase(MasterTestCase):
             ).exists()
         )
 
-    def test_05(self):
+    def test_delete_02(self):
         """
         Test forced deleting a Continent model instance.
         """
@@ -98,14 +98,14 @@ class ContinentAPIViewTest(MasterAPIViewTest):
         self.valid_payload = {"name": self.model_name_2}
         self.invalid_payload = {"name": ""}
 
-    def test_01(self):
+    def test_read_01(self):
         """
         Test OPTIONS request for Continent API.
         """
         response = self.client.options(self.url)
         self.assertEqual(response.status_code, self.import_status.HTTP_200_OK)
 
-    def test_02(self):
+    def test_read_02(self):
         """
         Test GET request for Continent API.
         """
@@ -115,7 +115,7 @@ class ContinentAPIViewTest(MasterAPIViewTest):
         self.assertEqual(response.status_code, self.import_status.HTTP_200_OK)
         self.assertEqual(response.data, serializer.data)
 
-    def test_03(self):
+    def test_create_01(self):
         """
         Test POST request for creating a Continent.
         """
@@ -127,7 +127,7 @@ class ContinentAPIViewTest(MasterAPIViewTest):
         )
         self.assertEqual(Model.objects.count(), 2)
 
-    def test_04(self):
+    def test_create_02(self):
         """
         Test POST request with invalid data for creating a Continent.
         """
@@ -138,7 +138,7 @@ class ContinentAPIViewTest(MasterAPIViewTest):
             response.status_code, self.import_status.HTTP_400_BAD_REQUEST
         )
 
-    def test_05(self):
+    def test_update_01(self):
         """
         Test PUT request for updating a Continent.
         """
@@ -157,7 +157,7 @@ class ContinentAPIViewTest(MasterAPIViewTest):
             self.continent.name, self.valid_payload["name"].upper()
         )
 
-    def test_06(self):
+    def test_delete_01(self):
         """
         Test DELETE request for deleting a Continent.
         """
