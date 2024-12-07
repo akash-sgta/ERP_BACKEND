@@ -13,6 +13,15 @@
 		"version": "0.2.0",
 		"configurations": [
 			{
+				"name": "test",
+				"type": "debugpy",
+				"request": "launch",
+				"program": "${workspaceFolder}${pathSeparator}MMS${pathSeparator}manage.py",
+				"args": ["test","profile","staff","util","patient"],
+				"console": "integratedTerminal",
+				"justMyCode": true
+			},
+			{
 				"name": "run",
 				"type": "debugpy",
 				"request": "launch",
@@ -26,7 +35,7 @@
 				"type": "debugpy",
 				"request": "launch",
 				"program": "${workspaceFolder}${pathSeparator}MMS${pathSeparator}manage.py",
-				"args": ["makemigrations"],
+				"args": ["makemigrations","profile","staff","util","patient"],
 				"console": "integratedTerminal",
 				"justMyCode": true
 			},

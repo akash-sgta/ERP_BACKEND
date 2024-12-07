@@ -4,6 +4,7 @@ from django.test import TestCase
 from rest_framework.test import APITestCase
 from django.urls import reverse
 from rest_framework import status
+import base64
 
 # =====================================================================
 
@@ -40,6 +41,17 @@ class MasterAPIViewTest(APITestCase):
         self.import_status = status
 
     def setUp(self):
+        basic_auth = {
+            "Username": "admin",
+            "Password": "admin",
+        }
+        credentials = "{}:{}".format(
+            basic_auth["Username"],
+            basic_auth["Password"],
+        ).encode("utf-8")
+        encoded_credentials = base64.b64encode(credentials)
+        encoded_credentials = encoded_credentials.decode("utf-8")
+        self.headers = {"Authorization": f"Basic {encoded_credentials}"}
         super(MasterAPIViewTest, self).setUp()
 
     def test_options_company(self):
