@@ -14,42 +14,42 @@ PATTERN_ID = r"(?P<id>\d*)"
 
 urlpatterns = [
     re_path(
-        rf"company/{PATTERN_ID}",
+        rf"company/{PATTERN_ID}$",
         Company.as_view(),
         name="util__company",
     ),
     re_path(
-        rf"continent/{PATTERN_ID}",
+        rf"continent/{PATTERN_ID}$",
         Continent.as_view(),
         name="util__continent",
     ),
     re_path(
-        rf"country/{PATTERN_ID}",
+        rf"country/{PATTERN_ID}$",
         Country.as_view(),
         name="util__country",
     ),
     re_path(
-        rf"state/{PATTERN_ID}",
+        rf"state/{PATTERN_ID}$",
         State.as_view(),
         name="util__state",
     ),
     re_path(
-        rf"district/{PATTERN_ID}",
+        rf"district/{PATTERN_ID}$",
         District.as_view(),
         name="util__district",
     ),
     re_path(
-        rf"file_type/{PATTERN_ID}",
+        rf"file_type/{PATTERN_ID}$",
         FileType.as_view(),
         name="util__file_type",
     ),
     re_path(
-        rf"file/{PATTERN_ID}",
+        rf"file/{PATTERN_ID}$",
         File.as_view(),
         name="util__file",
     ),
     re_path(
-        rf"government_id_type/{PATTERN_ID}",
+        rf"government_id_type/{PATTERN_ID}$",
         GovernmentIdType.as_view(),
         name="util__government_id_type",
     ),

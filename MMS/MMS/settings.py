@@ -22,7 +22,9 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 # See https://docs.djangoproject.com/en/5.1/howto/deployment/checklist/
 
 # SECURITY WARNING: keep the secret key used in production secret!
-SECRET_KEY = "django-insecure-h8eq^#nmj3jg=)e+5s#bv1fw)_zo&6=8=s16@1%sjlm0u7=g98"
+SECRET_KEY = (
+    "django-insecure-h8eq^#nmj3jg=)e+5s#bv1fw)_zo&6=8=s16@1%sjlm0u7=g98"
+)
 
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
@@ -41,7 +43,7 @@ INSTALLED_APPS = [
     "django.contrib.staticfiles",
     # ================================================================
     "rest_framework",
-    "rest_framework.documentation",
+    "rest_framework_simplejwt",
     "drf_yasg",
     # ================================================================
     "util",
@@ -136,26 +138,40 @@ DEFAULT_AUTO_FIELD = "django.db.models.BigAutoField"
 SIMPLE_JWT = {
     "ACCESS_TOKEN_LIFETIME": timedelta(minutes=180),
     "REFRESH_TOKEN_LIFETIME": timedelta(days=15),
+    "ROTATE_REFRESH_TOKENS": False,
+    "BLACKLIST_AFTER_ROTATION": True,
+    "ALGORITHM": "HS256",
+    "SIGNING_KEY": SECRET_KEY,
+    "AUTH_HEADER_TYPES": ("Bearer",),
 }
 
 REST_FRAMEWORK = {
-    "DEFAULT_PERMISSION_CLASSES": [
-        # "rest_framework.permissions.DjangoModelPermissionsOrAnonReadOnly",
-        "rest_framework.permissions.AllowAny",
-    ],
+    "DEFAULT_AUTHENTICATION_CLASSES": (
+        "rest_framework.authentication.SessionAuthentication",
+        "rest_framework_simplejwt.authentication.JWTAuthentication",
+        "rest_framework.authentication.BasicAuthentication",
+    ),
+    "DEFAULT_PERMISSION_CLASSES": (
+        "rest_framework.permissions.IsAuthenticated",
+    ),
+}
+
+# ===================================== SWAGGER ======================================
+SWAGGER_SETTINGS = {
+    "LOGIN_URL": "/admin/login/",
+    "LOGOUT_URL": "/admin/logout/",
 }
 
 # ===================================== LOGGING ======================================
-try:
-    os.remove(os.path.join(BASE_DIR, "logfile.log"))
-except FileNotFoundError:
-    print("[!] No Log file to be deleted")
-except Exception as e:
-    pass
-else:
-    print("[.] Old Log file deleted")
-
 if not DEBUG:
+    try:
+        os.remove(os.path.join(BASE_DIR, "logfile.log"))
+    except FileNotFoundError:
+        print("[!] No Log file to be deleted")
+    except Exception as e:
+        pass
+    else:
+        print("[.] Old Log file deleted")
     LOGGING = {
         "version": 1,
         "disable_existing_loggers": False,

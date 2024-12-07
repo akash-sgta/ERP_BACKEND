@@ -30,8 +30,11 @@ python mms/manage.py makemigrations profile staff util patient
 python mms/manage.py migrate
 ```
 ```commandline
-python mms/manage.py test util
+python mms/manage.py test profile staff util patient
 ```
 ```commandline
 python mms/manage.py runserver 127.0.0.1:8000
 ```
+___
+Documentation : Courtsy of ChatGPT3 and Copilot
+___

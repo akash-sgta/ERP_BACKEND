@@ -4,7 +4,10 @@ from django.urls import re_path, include
 from rest_framework import permissions
 from drf_yasg.views import get_schema_view
 from drf_yasg import openapi
-
+from rest_framework_simplejwt.views import (
+    TokenObtainPairView,
+    TokenRefreshView,
+)
 from MMS._views.logger import logger_view
 
 # =====================================================================
@@ -36,7 +39,7 @@ urlpatterns = [
         admin.site.urls,
     ),
     re_path(
-        r"^log/",
+        r"^log/$",
         logger_view,
         name="log",
     ),
@@ -50,6 +53,17 @@ urlpatterns = [
         r"^doc/redoc/",
         schema_view.with_ui(REDOC, cache_timeout=0),
         name="doc_redoc",
+    ),
+    # =========================================================
+    re_path(
+        r"^api/token/$",
+        TokenObtainPairView.as_view(),
+        name="token_obtain_pair",
+    ),
+    re_path(
+        r"^api/token/refresh/$",
+        TokenRefreshView.as_view(),
+        name="token_refresh",
     ),
     # =========================================================
     re_path(

@@ -18,7 +18,6 @@ def logger_view(request):
     try:
         with open(_file_path, "r") as file:
             lines = file.readlines()
-            print(reversed(lines))
             for line in reversed(lines):
                 log.append(line.strip())
                 _limit = _limit - 1

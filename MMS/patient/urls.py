@@ -7,7 +7,7 @@ PATTERN_ID = "(?P<id>\d*)"
 
 urlpatterns = [
     re_path(
-        rf"patient/{PATTERN_ID}",
+        rf"patient/{PATTERN_ID}$",
         Patient.as_view(),
         name="patient__patient",
     ),

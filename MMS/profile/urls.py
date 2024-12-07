@@ -8,12 +8,12 @@ PATTERN_ID = "(?P<id>\d*)"
 
 urlpatterns = [
     re_path(
-        rf"address/{PATTERN_ID}",
+        rf"address/{PATTERN_ID}$",
         Address.as_view(),
         name="profile__address",
     ),
     re_path(
-        rf"profile/{PATTERN_ID}",
+        rf"profile/{PATTERN_ID}$",
         Profile.as_view(),
         name="profile__profile",
     ),

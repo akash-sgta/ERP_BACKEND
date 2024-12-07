@@ -20,6 +20,7 @@ class CountryTestCase(MasterTestCase):
             company=self.company_ref,
             continent=self.continent_ref,
             name=self.model_name,
+            iso="100",
             changedBy="tester",
         )
 
@@ -72,10 +73,12 @@ class CountryAPIViewTest(MasterAPIViewTest):
         self.url_name = "util__country"
         self.url = self.import_reverse(self.url_name, kwargs={"id": ""})
         self.model_name = "test Country"
+        self.iso = "100"
         self.country_data = {
             "company": self.company_ref,
             "continent": self.continent_ref,
             "name": self.model_name,
+            "iso": self.iso,
         }
         self.country = Model.objects.create(**self.country_data)
         self.model_name_2 = "Updated Country"
@@ -83,8 +86,11 @@ class CountryAPIViewTest(MasterAPIViewTest):
             "company": self.company_ref.id,
             "continent": self.continent_ref.id,
             "name": self.model_name_2,
+            "iso": self.iso,
         }
-        self.invalid_payload = {"name": ""}
+        self.invalid_payload = {
+            "name": "",
+        }
 
     def test_options_country(self):
         response = self.client.options(self.url)
