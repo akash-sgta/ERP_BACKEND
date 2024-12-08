@@ -19,7 +19,7 @@
 				"program": "${workspaceFolder}${pathSeparator}MMS${pathSeparator}manage.py",
 				"args": ["test","profile","staff","util","patient"],
 				"console": "integratedTerminal",
-				"justMyCode": true
+				"justMyCode": false
 			},
 			{
 				"name": "run",

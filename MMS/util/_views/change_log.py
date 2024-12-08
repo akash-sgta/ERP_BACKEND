@@ -40,8 +40,8 @@ class ChangeLog(APIView):
     permission_classes = [IsAuthenticated]
     authentication_classes = [
         SessionAuthentication,
-        JWTAuthentication,
         BasicAuthentication,
+        JWTAuthentication,
     ]
 
     allowed_methods = "GET,POST,PUT,DELETE,OPTIONS".split(",")

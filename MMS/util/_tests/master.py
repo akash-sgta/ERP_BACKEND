@@ -1,8 +1,26 @@
 # =====================================================================
 from django.test import TestCase
 from rest_framework.test import APITestCase
+from django.urls import reverse
+from rest_framework import status
+import base64
+from django.contrib.auth import get_user_model
+from datetime import datetime
+
+from profile._models.profile import Profile
+from util._models.company import Company
 
 # =====================================================================
+User = get_user_model()
+C_USER_DATA = {
+    "username": "admin",
+    "password": "admin",
+    "name": {
+        "first": "First",
+        "last": "Last",
+    },
+    "dob": datetime.now(),
+}
 
 
 class MasterTestCase(TestCase):
@@ -14,6 +32,26 @@ class MasterTestCase(TestCase):
         """
         Set up test data for the tests.
         """
+        try:
+            # Create Admin Company
+            admin_company_ref = Company.objects.create(
+                name="admin",
+            )
+            # Create user
+            user_ref = User.objects.create_user(
+                username=C_USER_DATA["username"],
+                password=C_USER_DATA["password"],
+            )
+            # Create Profile
+            profile_ref = Profile.objects.create(
+                company=admin_company_ref,
+                user=user_ref,
+                first_name=C_USER_DATA["name"]["first"],
+                last_name=C_USER_DATA["name"]["last"],
+                date_of_birth=C_USER_DATA["dob"],
+            )
+        except Exception as e:
+            raise Exception("User Creation Error !")
         super(MasterTestCase, self).setUp()
 
     def test_create_01(self):
@@ -67,13 +105,30 @@ class MasterAPIViewTest(APITestCase):
         """
         Set up test data for API tests and authentication.
         """
-        basic_auth = {
-            "Username": "admin",
-            "Password": "admin",
-        }
+        try:
+            # Create Admin Company
+            admin_company_ref = Company.objects.create(
+                name="admin",
+            )
+            # Create user
+            user_ref = User.objects.create_user(
+                username=C_USER_DATA["username"],
+                password=C_USER_DATA["password"],
+            )
+            # Create Profile
+            profile_ref = Profile.objects.create(
+                company=admin_company_ref,
+                user=user_ref,
+                first_name=C_USER_DATA["name"]["first"],
+                last_name=C_USER_DATA["name"]["last"],
+                date_of_birth=C_USER_DATA["dob"],
+            )
+        except Exception as e:
+            raise Exception("User Creation Error !")
+
         credentials = "{}:{}".format(
-            basic_auth["Username"],
-            basic_auth["Password"],
+            C_USER_DATA["username"],
+            C_USER_DATA["password"],
         ).encode("utf-8")
         encoded_credentials = base64.b64encode(credentials)
         encoded_credentials = encoded_credentials.decode("utf-8")

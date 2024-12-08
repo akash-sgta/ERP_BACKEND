@@ -6,8 +6,9 @@ from util._models.file import File
 from util._models.country import Country
 from util.functions import validate_phone_number
 from profile._models.address import Address
-from django.contrib.auth.models import User
+from django.contrib.auth import get_user_model
 
+User = get_user_model()
 # =====================================================================
 
 

@@ -14,7 +14,10 @@ class Company(ModelSerializer):
 
     class Meta:
         model = Model
-        hidden_fields = ("is_active",)
+        hidden_fields = (
+            "is_active",
+            "company",
+        )
         fields = list()
         for field in model._meta.fields:
             if field.name not in hidden_fields:
@@ -25,7 +28,6 @@ class Company(ModelSerializer):
             "createdBy",
             "changedOn",
             "changedBy",
-            "company",
         )
 
     def to_internal_value(self, data):

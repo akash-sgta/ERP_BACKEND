@@ -41,6 +41,24 @@ def cust_get_vars(_model: APIView = None, **kwargs):
     return data
 
 
+def cust_fetch_company(*args, **kwargs):
+    from profile._models.profile import Profile
+    from util._models.company import Company
+
+    C_COMPANY = "company"
+    C_USER = "user"
+    # ===========================================
+    try:
+        profile_ref = Profile.objects.get(user__username=kwargs[C_USER])
+        kwargs[C_COMPANY] = Company.objects._get(id=profile_ref.company.id)
+    except KeyError:
+        kwargs[C_COMPANY] = None
+    except ObjectDoesNotExist:
+        kwargs[C_COMPANY] = None
+
+    return kwargs[C_COMPANY]
+
+
 def cust_get(_model: APIView, *args, **kwargs):
     vars = _model._get_vars(**kwargs)
     if vars is None:
@@ -54,16 +72,20 @@ def cust_get(_model: APIView, *args, **kwargs):
             model_ref = None
     if model_ref is not None:
         serializer_ref = _model.serializer_class(model_ref, many=True)
-        _response = Response(data=serializer_ref.data, status=status.HTTP_200_OK)
+        _response = Response(
+            data=serializer_ref.data, status=status.HTTP_200_OK
+        )
     else:
-        _response = Response(data=C_BLANK_RESPONSE, status=status.HTTP_404_NOT_FOUND)
+        _response = Response(
+            data=C_BLANK_RESPONSE, status=status.HTTP_404_NOT_FOUND
+        )
     return _response
 
 
 def cust_post(_model: APIView, data: dict, *args, **kwargs):
-    from util._models.company import Company
+    C_COMPANY = "company"
+    # ========================================
 
-    # =======================================================
     data = data.copy()
     for element in C_FORM_POP:
         data.pop(element, None)
@@ -74,15 +96,18 @@ def cust_post(_model: APIView, data: dict, *args, **kwargs):
             data_dict.update(pair)
         data = data_dict
         del data_dict, pair
-
+    data[C_COMPANY] = kwargs[C_COMPANY]
     serializer_ref = _model.serializer_class(data=data)
-    # TODO : Get the company connection from the user data
-    serializer_ref.initial_data["company"] = Company.objects._get(id=1)
+
     if serializer_ref.is_valid():
         serializer_ref.save()
-        _response = Response(data=serializer_ref.data, status=status.HTTP_201_CREATED)
+        _response = Response(
+            data=serializer_ref.data, status=status.HTTP_201_CREATED
+        )
     else:
-        _response = Response(data=serializer_ref.errors, status=status.HTTP_400_BAD_REQUEST)
+        _response = Response(
+            data=serializer_ref.errors, status=status.HTTP_400_BAD_REQUEST
+        )
     return _response
 
 
@@ -90,7 +115,9 @@ def cust_put(_model: APIView, data: dict, *args, **kwargs):
     data = data.copy()
     vars = cust_get_vars(_model=_model, **kwargs)
     if vars is None:
-        _response = Response(data=C_BLANK_RESPONSE, status=status.HTTP_404_NOT_FOUND)
+        _response = Response(
+            data=C_BLANK_RESPONSE, status=status.HTTP_404_NOT_FOUND
+        )
     else:
         try:
             model_ref = _model.model.objects._filter(**vars)
@@ -113,18 +140,26 @@ def cust_put(_model: APIView, data: dict, *args, **kwargs):
         serializer_ref = _model.serializer_class(model_ref, data=data)
         if serializer_ref.is_valid():
             serializer_ref.save()
-            _response = Response(data=serializer_ref.data, status=status.HTTP_202_ACCEPTED)
+            _response = Response(
+                data=serializer_ref.data, status=status.HTTP_202_ACCEPTED
+            )
         else:
-            _response = Response(data=serializer_ref.errors, status=status.HTTP_400_BAD_REQUEST)
+            _response = Response(
+                data=serializer_ref.errors, status=status.HTTP_400_BAD_REQUEST
+            )
     else:
-        _response = Response(data=C_BLANK_RESPONSE, status=status.HTTP_404_NOT_FOUND)
+        _response = Response(
+            data=C_BLANK_RESPONSE, status=status.HTTP_404_NOT_FOUND
+        )
     return _response
 
 
 def cust_delete(_model: APIView, *args, **kwargs):
     vars = cust_get_vars(_model=_model, **kwargs)
     if vars is None:
-        _response = Response(data=C_BLANK_RESPONSE, status=status.HTTP_404_NOT_FOUND)
+        _response = Response(
+            data=C_BLANK_RESPONSE, status=status.HTTP_404_NOT_FOUND
+        )
     else:
         try:
             model_ref = _model.model.objects._filter(**vars)
@@ -136,9 +171,13 @@ def cust_delete(_model: APIView, *args, **kwargs):
         serializer_ref = _model.serializer_class(model_ref, many=True)
         model_ref = model_ref[0]
         model_ref.delete()
-        _response = Response(data=serializer_ref.data, status=status.HTTP_204_NO_CONTENT)
+        _response = Response(
+            data=serializer_ref.data, status=status.HTTP_204_NO_CONTENT
+        )
     else:
-        _response = Response(data=C_BLANK_RESPONSE, status=status.HTTP_404_NOT_FOUND)
+        _response = Response(
+            data=C_BLANK_RESPONSE, status=status.HTTP_404_NOT_FOUND
+        )
     return _response
 
 
@@ -149,10 +188,15 @@ def cust_options(_model: APIView, request, *args, **kwargs):
     for field in _model.model._meta.get_fields():
         if (
             field.name not in _model.serializer_class.Meta.hidden_fields
-            and field.name not in _model.serializer_class.Meta.read_only_fields
+            and field.name
+            not in _model.serializer_class.Meta.read_only_fields
             and not (isinstance(field, ManyToOneRel))  # No back reference
         ):
-            fields.update({field.name: f"{field.get_internal_type()}:{getattr(field, 'max_length', None)}"})
+            fields.update(
+                {
+                    field.name: f"{field.get_internal_type()}:{getattr(field, 'max_length', None)}"
+                }
+            )
 
     custom_data = {
         "description": f"This is the API for managing {name} data.",
@@ -183,7 +227,9 @@ def cust_is_valid(_model: ModelSerializer, *args, **kwargs):
                     pass
                 else:
                     try:
-                        _model.initial_data[unique_field] = _model.initial_data[unique_field].upper()
+                        _model.initial_data[unique_field] = (
+                            _model.initial_data[unique_field].upper()
+                        )
                         expression = "{}{}=_model.initial_data['{}'],".format(
                             expression,
                             unique_field,
@@ -212,9 +258,19 @@ def cust_is_valid(_model: ModelSerializer, *args, **kwargs):
         try:
             for error_index in range(len(_model.errors["non_field_errors"])):
                 try:
-                    if type(_model.errors["non_field_errors"][error_index]) == ErrorDetail:
-                        if _model.errors["non_field_errors"][error_index].code == "unique":
-                            _model._errors["non_field_errors"][error_index] = ErrorDetail(string=_message_01, code="admin")
+                    if (
+                        type(_model.errors["non_field_errors"][error_index])
+                        == ErrorDetail
+                    ):
+                        if (
+                            _model.errors["non_field_errors"][
+                                error_index
+                            ].code
+                            == "unique"
+                        ):
+                            _model._errors["non_field_errors"][
+                                error_index
+                            ] = ErrorDetail(string=_message_01, code="admin")
                 except KeyError:
                     pass
         except KeyError:
@@ -291,12 +347,18 @@ def update_active_status(_model: models.Model, *args, **kwargs):
     return is_active_old, is_active_new
 
 
-def get_related_models(_model: models.Model, on_delete_behaviour=models.CASCADE, *args, **kwargs):
+def get_related_models(
+    _model: models.Model, on_delete_behaviour=models.CASCADE, *args, **kwargs
+):
     C_CUSTOM_APPS = tuple("patient,profile,staff,util".split(","))
     # ===============================
 
     related_models = dict()
-    custom_models = list(model for model in apps.get_models() if model._meta.app_label in C_CUSTOM_APPS)
+    custom_models = list(
+        model
+        for model in apps.get_models()
+        if model._meta.app_label in C_CUSTOM_APPS
+    )
     for model in custom_models:
         related_models.update({model: list()})
         for field in model._meta.get_fields():
@@ -313,7 +375,9 @@ def update_reference_objects(_model: models.Model, *args, **kwargs):
     related_models = get_related_models(_model, *args, **kwargs)
     for related_model in related_models.keys():
         if len(related_models[related_model]) > 0:
-            expression = "related_model.objects.filter({}=_model.pk)".format(related_models[related_model][0])
+            expression = "related_model.objects.filter({}=_model.pk)".format(
+                related_models[related_model][0]
+            )
             try:
                 related_refs = eval(expression)
                 if len(related_refs) == 0:

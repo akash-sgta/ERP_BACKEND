@@ -18,6 +18,7 @@ from util.functions import (
     cust_put,
     cust_delete,
     cust_options,
+    cust_fetch_company,
 )
 
 
@@ -39,8 +40,8 @@ class Company(APIView):
     permission_classes = [IsAuthenticated]
     authentication_classes = [
         SessionAuthentication,
-        JWTAuthentication,
         BasicAuthentication,
+        JWTAuthentication,
     ]
 
     allowed_methods = "GET,POST,PUT,DELETE,OPTIONS".split(",")
@@ -64,22 +65,36 @@ class Company(APIView):
         """
         Handle POST requests to create new data.
         """
+        company_ref = cust_fetch_company(user=request.user.username)
+        kwargs.update("company", company_ref)
         return cust_post(_model=self, data=request.data, *args, **kwargs)
 
     def put(self, request, *args, **kwargs):
         """
         Handle PUT requests to update existing data.
         """
+        try:
+            kwargs.update({"user": request.user.username})
+        except KeyError:
+            pass
         return cust_put(_model=self, data=request.data, *args, **kwargs)
 
     def delete(self, request, *args, **kwargs):
         """
         Handle DELETE requests to delete data.
         """
+        try:
+            kwargs.update({"user": request.user.username})
+        except KeyError:
+            pass
         return cust_delete(_model=self, *args, **kwargs)
 
     def options(self, request, *args, **kwargs):
         """
         Handle OPTIONS requests to provide information about the allowed HTTP methods.
         """
+        try:
+            kwargs.update({"user": request.user.username})
+        except KeyError:
+            pass
         return cust_options(_model=self, request=request, *args, **kwargs)
