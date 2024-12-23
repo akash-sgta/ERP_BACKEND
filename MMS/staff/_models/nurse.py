@@ -1,7 +1,6 @@
 # =====================================================================
 from django.db import models
 from util._models.master import Master
-from util.functions import create_random, validate_string_len
 from profile._models.profile import Profile
 
 # =====================================================================
@@ -21,4 +20,6 @@ class Nurse(Master):
         return super(Nurse, self).save(*args, **kwargs)
 
     def __str__(self):
-        return "{}->{}{}".format(self.profile, super(Nurse, self).__str__(), self.pk)
+        return "{}->{}{}".format(
+            self.profile, super(Nurse, self).__str__(), self.pk
+        )

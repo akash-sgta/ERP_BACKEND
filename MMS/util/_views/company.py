@@ -11,18 +11,11 @@ from util._serializers.company import Company as Serializer
 from util._models.company import Company as Model
 from util._views.change_log import ChangeLog
 
-from util.functions import (
-    cust_get_vars,
-    cust_get,
-    cust_post,
-    cust_put,
-    cust_delete,
-    cust_options,
-    cust_fetch_company,
-)
+from util.functions import Custom
 
 
 # =====================================================================
+custom_ref = Custom()
 
 
 class Company(APIView):
@@ -49,52 +42,67 @@ class Company(APIView):
     serializer_class = Serializer
     model = Model
 
+    C_USER = "_user_"
+    C_COMPANY = "company"
+
     def _get_vars(self, **kwargs):
         """
         Method to get custom variables for the model.
         """
-        return cust_get_vars(_model=self, **kwargs)
+        return custom_ref.cust_get_vars(model_ref=self, **kwargs)
 
     def get(self, request, *args, **kwargs):
         """
         Handle GET requests to retrieve data.
         """
-        return cust_get(_model=self, *args, **kwargs)
+        return custom_ref.cust_get(model_ref=self, *args, **kwargs)
 
     def post(self, request, *args, **kwargs):
         """
         Handle POST requests to create new data.
         """
-        company_ref = cust_fetch_company(user=request.user.username)
-        kwargs.update("company", company_ref)
-        return cust_post(_model=self, data=request.data, *args, **kwargs)
+        try:
+            company_ref = custom_ref.cust_fetch_company(
+                user=request.user.username
+            )
+            kwargs.update({self.C_COMPANY: company_ref})
+            kwargs.update({self.C_USER: request.user.username})
+        except KeyError:
+            pass
+        return custom_ref.cust_post(
+            model_ref=self, data=request.data, *args, **kwargs
+        )
 
     def put(self, request, *args, **kwargs):
         """
         Handle PUT requests to update existing data.
         """
-        try:
-            kwargs.update({"user": request.user.username})
-        except KeyError:
-            pass
-        return cust_put(_model=self, data=request.data, *args, **kwargs)
+        # try:
+        #     kwargs.update({"user": request.user.username})
+        # except KeyError:
+        #     pass
+        return custom_ref.cust_put(
+            model_ref=self, data=request.data, *args, **kwargs
+        )
 
     def delete(self, request, *args, **kwargs):
         """
         Handle DELETE requests to delete data.
         """
-        try:
-            kwargs.update({"user": request.user.username})
-        except KeyError:
-            pass
-        return cust_delete(_model=self, *args, **kwargs)
+        # try:
+        #     kwargs.update({"user": request.user.username})
+        # except KeyError:
+        #     pass
+        return custom_ref.cust_delete(model_ref=self, *args, **kwargs)
 
     def options(self, request, *args, **kwargs):
         """
         Handle OPTIONS requests to provide information about the allowed HTTP methods.
         """
-        try:
-            kwargs.update({"user": request.user.username})
-        except KeyError:
-            pass
-        return cust_options(_model=self, request=request, *args, **kwargs)
+        # try:
+        #     kwargs.update({"user": request.user.username})
+        # except KeyError:
+        #     pass
+        return custom_ref.cust_options(
+            model_ref=self, request=request, *args, **kwargs
+        )

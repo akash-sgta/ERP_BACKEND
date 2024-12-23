@@ -13,8 +13,8 @@ from util._models.company import Company
 # =====================================================================
 User = get_user_model()
 C_USER_DATA = {
-    "username": "admin",
-    "password": "admin",
+    "username": "admintest",
+    "password": "admintest",
     "name": {
         "first": "First",
         "last": "Last",
@@ -35,7 +35,7 @@ class MasterTestCase(TestCase):
         try:
             # Create Admin Company
             admin_company_ref = Company.objects.create(
-                name="admin",
+                name="admin", changedBy=C_USER_DATA["username"]
             )
             # Create user
             user_ref = User.objects.create_user(
@@ -49,6 +49,7 @@ class MasterTestCase(TestCase):
                 first_name=C_USER_DATA["name"]["first"],
                 last_name=C_USER_DATA["name"]["last"],
                 date_of_birth=C_USER_DATA["dob"],
+                changedBy=C_USER_DATA["username"],
             )
         except Exception as e:
             raise Exception("User Creation Error !")
@@ -109,6 +110,7 @@ class MasterAPIViewTest(APITestCase):
             # Create Admin Company
             admin_company_ref = Company.objects.create(
                 name="admin",
+                changedBy=C_USER_DATA["username"],
             )
             # Create user
             user_ref = User.objects.create_user(
@@ -122,6 +124,7 @@ class MasterAPIViewTest(APITestCase):
                 first_name=C_USER_DATA["name"]["first"],
                 last_name=C_USER_DATA["name"]["last"],
                 date_of_birth=C_USER_DATA["dob"],
+                changedBy=C_USER_DATA["username"],
             )
         except Exception as e:
             raise Exception("User Creation Error !")
@@ -133,15 +136,16 @@ class MasterAPIViewTest(APITestCase):
         encoded_credentials = base64.b64encode(credentials)
         encoded_credentials = encoded_credentials.decode("utf-8")
         self.headers = {"Authorization": f"Basic {encoded_credentials}"}
+
         super(MasterAPIViewTest, self).setUp()
 
-    def test_options_01(self):
+    def test_read_01(self):
         """
         Test OPTIONS request for the API.
         """
         self.assertTrue(True)
 
-    def test_read_01(self):
+    def test_read_02(self):
         """
         Test GET request for the API.
         """

@@ -4,12 +4,13 @@ from util._models.master import Master
 from util._models.government_id_type import GovernmentIdType
 from util._models.file import File
 from util._models.country import Country
-from util.functions import validate_phone_number
+from util.functions import Custom
 from profile._models.address import Address
 from django.contrib.auth import get_user_model
 
 User = get_user_model()
 # =====================================================================
+custom_ref = Custom()
 
 
 class Profile(Master):
@@ -80,12 +81,12 @@ class Profile(Master):
     phone_office_no = models.CharField(
         max_length=15,
         blank=True,
-        validators=[validate_phone_number],
+        validators=[custom_ref.validate_phone_number],
     )
     phone_home_no = models.CharField(
         max_length=15,
         blank=True,
-        validators=[validate_phone_number],
+        validators=[custom_ref.validate_phone_number],
     )
 
     government_id = models.CharField(

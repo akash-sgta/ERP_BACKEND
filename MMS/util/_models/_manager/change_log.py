@@ -14,8 +14,8 @@ class ChangeLogModelManager(Manager):
             ref = self.filter(is_active=True, *args, **kwargs)
         return ref
 
-    def _all(self, include_deleted=False, *args, **kwargs):
-        return self._filter(include_deleted=include_deleted)
+    def all_(self, include_deleted=False, *args, **kwargs):
+        return self.filter_(include_deleted=include_deleted)
 
     def _get(self, include_deleted=False, *args, **kwargs):
         if include_deleted:

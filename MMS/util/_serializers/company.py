@@ -4,10 +4,11 @@ from rest_framework.exceptions import ErrorDetail
 from rest_framework.serializers import ModelSerializer
 from django.conf import settings
 from util._models.company import Company as Model
-from util.functions import cust_to_internal_value, cust_is_valid
+from util.functions import Custom
 
 
 # =====================================================================
+custom_ref = Custom()
 
 
 class Company(ModelSerializer):
@@ -31,9 +32,11 @@ class Company(ModelSerializer):
         )
 
     def to_internal_value(self, data):
-        cust_to_internal_value(_model=self, data=data)
+        custom_ref.cust_to_internal_value(model_ref=self, data=data)
         return super(Company, self).to_internal_value(data)
 
     def is_valid(self, *args, **kwargs):
         is_valid = super(Company, self).is_valid(*args, **kwargs)
-        return cust_is_valid(_model=self, is_valid=is_valid, *args, **kwargs)
+        return custom_ref.cust_is_valid(
+            model_ref=self, is_valid=is_valid, *args, **kwargs
+        )

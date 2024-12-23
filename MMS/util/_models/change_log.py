@@ -3,16 +3,14 @@ from django.db import models, transaction
 from django.utils import timezone
 from django.db.utils import IntegrityError
 
-from util._models._manager.change_log import ChangeLogModelManager as ModelManager
-from util.functions import (
-    update_change_log,
-    update_active_status,
-    update_reference_objects,
-    cust_check_save,
+from util._models._manager.change_log import (
+    ChangeLogModelManager as ModelManager,
 )
+from util.functions import Custom
 
 
 # =====================================================================
+custom_ref = Custom()
 
 
 class ChangeLog(models.Model):
@@ -45,35 +43,39 @@ class ChangeLog(models.Model):
     objects = ModelManager()
 
     def check_save(self, *args, **kwargs):
-        return cust_check_save(_model=self, *args, **kwargs)
+        return custom_ref.cust_check_save(model_ref=self, *args, **kwargs)
 
     def save(self, del_flag=False, *args, **kwargs):
-        C_DEL_FLAG = "del_flag"
-        C_USER = "user"
-
-        kwargs.update({C_DEL_FLAG: del_flag, C_USER: self.changedBy})
-        update_change_log(_model=self, *args, **kwargs)
-        _stat = update_active_status(_model=self, *args, **kwargs)
-        kwargs.pop(C_DEL_FLAG)
-        kwargs.pop(C_USER)
+        kwargs.update(
+            {
+                custom_ref.DEL_FLAG: del_flag,
+                custom_ref.USER: f"{self.changedBy}".upper(),
+            }
+        )
+        custom_ref.update_change_log(model_ref=self, *args, **kwargs)
+        _stat = custom_ref.update_active_status(
+            model_ref=self, *args, **kwargs
+        )
+        kwargs.pop(custom_ref.DEL_FLAG)
+        kwargs.pop(custom_ref.USER)
 
         _check_save = self.check_save()
         if _check_save[0]:
             if _stat[0] != _stat[1]:
-                kwargs.update({C_DEL_FLAG: del_flag})
-                update_reference_objects(_model=self, *args, **kwargs)
-                kwargs.pop(C_DEL_FLAG)
+                kwargs.update({custom_ref.DEL_FLAG: del_flag})
+                custom_ref.update_reference_objects(
+                    model_ref=self, *args, **kwargs
+                )
+                kwargs.pop(custom_ref.DEL_FLAG)
         else:
             pass
 
         return super(ChangeLog, self).save(*args, **kwargs)
 
     def delete(self, *args, **kwargs):
-        C_FORCED = "FORCED"
-
         try:
-            if kwargs[C_FORCED]:
-                kwargs.pop(C_FORCED)
+            if kwargs[custom_ref.FORCED]:
+                kwargs.pop(custom_ref.FORCED)
                 return super(ChangeLog, self).delete(*args, **kwargs)
         except KeyError:
             return self.save(del_flag=True)
